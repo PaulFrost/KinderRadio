@@ -10,6 +10,7 @@ public:
 	explicit GPIOInterface(QObject *parent = nullptr);
 
 signals:
+	void nextPressed();
 
 public slots:
 };

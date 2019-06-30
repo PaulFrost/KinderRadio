@@ -10,6 +10,8 @@ public:
 	explicit RFIDInterface(QObject *parent = nullptr);
 
 signals:
+	void newTagRecognized(const QString &tagId);
+
 
 public slots:
 };

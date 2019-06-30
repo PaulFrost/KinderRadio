@@ -17,6 +17,14 @@ public:
 
 private:
 	Ui::PlayerWidget *ui;
+public slots:
+	void setStatusText(const QString &status);
+
+signals:
+	void stopPressed();
+	void playPressed();
+	void previousPressed();
+	void nextPressed();
 };
 
 #endif // PLAYERWIDGET_H

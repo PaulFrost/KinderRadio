@@ -6,9 +6,23 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 	ui(new Ui::PlayerWidget)
 {
 	ui->setupUi(this);
+
+	connect(ui->pbStop, &QPushButton::clicked,
+			this, &PlayerWidget::stopPressed);
+	connect(ui->pbPlay, &QPushButton::clicked,
+			this, &PlayerWidget::playPressed);
+	connect(ui->pbPrevious, &QPushButton::clicked,
+			this, &PlayerWidget::previousPressed);
+	connect(ui->pbNext, &QPushButton::clicked,
+			this, &PlayerWidget::nextPressed);
 }
 
 PlayerWidget::~PlayerWidget()
 {
 	delete ui;
+}
+
+void PlayerWidget::setStatusText(const QString &status)
+{
+	ui->leStatus->setText(status);
 }
