@@ -26,3 +26,21 @@ void PlayerWidget::setStatusText(const QString &status)
 {
 	ui->leStatus->setText(status);
 }
+
+void PlayerWidget::populateCbTagSelect(const QStringList &tagIds)
+{
+	ui->cbTagSelect->clear();
+	ui->cbTagSelect->addItems(tagIds);
+}
+
+
+void PlayerWidget::on_cbTagSelect_currentIndexChanged(const QString &arg1)
+{
+	emit tagSelected(arg1);
+}
+
+void PlayerWidget::on_cbTagSelect_currentTextChanged(const QString &arg1)
+{
+	/// @todo Create Folder after enter is being pressed
+	emit newTagEntered(arg1);
+}

@@ -19,7 +19,8 @@ SOURCES += \
         main.cpp \
         mediaplayer.cpp \
         playerwidget.cpp \
-        rfidinterface.cpp
+        rfidinterface.cpp \
+        tagmanager.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,7 +31,8 @@ HEADERS += \
     gpiointerface.h \
     mediaplayer.h \
     playerwidget.h \
-    rfidinterface.h
+    rfidinterface.h \
+    tagmanager.h
 
 FORMS += \
     playerwidget.ui
