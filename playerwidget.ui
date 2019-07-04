@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>458</width>
-    <height>164</height>
+    <height>189</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="cbTagSelect">
+        <widget class="TagSelectorCB" name="cbTagSelect">
          <property name="editable">
           <bool>true</bool>
          </property>
@@ -127,6 +127,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TagSelectorCB</class>
+   <extends>QComboBox</extends>
+   <header>playerwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -11,14 +11,17 @@ public:
 	explicit TagManager(QObject *parent = nullptr);
 	void loadTags();
 
+	QString lastTag() const;
+
 private:
-	QHash<QString,QString> m_TagToFolderTable;
+	QStringList m_Tags;
+	QString m_lastTag;
 
 signals:
 	void tagsLoaded(const QStringList &tagList);
 
 public slots:
-	void createNewTag(const QString &tagId);
+	void selectTag(const QString &tagId);
 };
 
 #endif // TAGMANAGER_H

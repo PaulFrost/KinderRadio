@@ -18,8 +18,12 @@ MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 	m_mediaPlayer->setVolume(100);
 }
 
-void MediaPlayer::reloadMedia()
+void MediaPlayer::reloadMedia(const QString &mediaPath)
 {
+	if(mediaPath.isEmpty()){
+		return;
+	}
+
 	m_mediaPlaylist->clear();
 
 	QString pwd = QDir::currentPath();
@@ -27,6 +31,10 @@ void MediaPlayer::reloadMedia()
 
 	QDir dir(QDir::currentPath());
 	dir.cd("media");
+	if(!dir.cd(mediaPath)){
+		return;
+	}
+
 	qDebug() << "Loading files from" << dir.path();
 	dir.setFilter(QDir::Files);
 
@@ -44,6 +52,12 @@ void MediaPlayer::reloadMedia()
 
 	m_mediaPlaylist->shuffle();
 	m_mediaPlaylist->setCurrentIndex(0);
+}
+
+void MediaPlayer::reloadMediaAndPlay(const QString &mediaPath)
+{
+	reloadMedia(mediaPath);
+	play();
 }
 
 void MediaPlayer::play()

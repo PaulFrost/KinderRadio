@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDateTime>
 
+const QString LOG_FILE = "./media/tags.log";
 const QString DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
 
 TagManager::TagManager(QObject *parent) : QObject(parent)
@@ -13,35 +14,59 @@ TagManager::TagManager(QObject *parent) : QObject(parent)
 void TagManager::loadTags()
 {
 	QDir currentDir = QDir::current();
+	currentDir.cd("media");
 	QFlags<QDir::Filter> filter = (QDir::Filter::Dirs
 						 | QDir::Filter::NoDotDot
 						 | QDir::Filter::NoDot);
 
 	QStringList nameFilterList;
 
-	QStringList list = currentDir.entryList(nameFilterList, filter);
+	m_Tags = currentDir.entryList(nameFilterList, filter);
 
-	QString tagId;
-	foreach(QString dirName, list){
-		tagId = dirName.mid(DATE_FORMAT.size() + 1);
-		m_TagToFolderTable.insert(tagId, dirName);
+	QFile file(LOG_FILE);
+	if(file.open(QIODevice::ReadOnly)){
+		QString fileContent = file.readAll();
+		QStringList lines = fileContent.split("\n");
+
+		QString line;
+		int i = lines.count()-1;
+		while(i >= 0){
+			line = lines[i];
+			if(line.size() > DATE_FORMAT.size()+2){
+				break;
+			}
+			i--;
+		}
+
+		m_lastTag = line.mid(DATE_FORMAT.size() + 2);
 	}
 
-	emit tagsLoaded(m_TagToFolderTable.keys());
+	emit tagsLoaded(m_Tags);
 }
 
-void TagManager::createNewTag(const QString &tagId)
+QString TagManager::lastTag() const
 {
-	if(m_TagToFolderTable.contains(tagId)){
-		/// @todo Rename Folder
+	return m_lastTag;
+}
+
+void TagManager::selectTag(const QString &tagId)
+{
+	QString logString = QDateTime::currentDateTime().toString(DATE_FORMAT);
+	logString.append(": ");
+	logString.append(tagId);
+	logString.append("\n");
+
+	QFile logFile("./media/tags.log");
+	logFile.open(QIODevice::Append | QIODevice::WriteOnly);
+	logFile.write(logString.toLocal8Bit());
+
+	if(m_Tags.contains(tagId)){
 		return;
 	}
 
-	QString dirName = QDateTime::currentDateTime().toString(DATE_FORMAT);
-	dirName.append("-");
-	dirName.append(tagId);
+	QDir currentPath = QDir::current();
+	currentPath.cd("media");
+	currentPath.mkdir(tagId);
 
-	QDir::current().mkdir(dirName);
-
-	m_TagToFolderTable.insert(tagId, dirName);
+	m_Tags.append(tagId);
 }
