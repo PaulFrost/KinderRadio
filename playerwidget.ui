@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>458</width>
-    <height>164</height>
+    <height>189</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,24 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Select a tag</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="TagSelectorCB" name="cbTagSelect">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QLineEdit" name="leStatus">
@@ -109,6 +127,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TagSelectorCB</class>
+   <extends>QComboBox</extends>
+   <header>playerwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

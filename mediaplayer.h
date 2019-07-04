@@ -19,7 +19,8 @@ signals:
 	 void statusChanged(const QString &status);
 
 public slots:
-	 void reloadMedia();
+	 void reloadMedia(const QString &mediaPath);
+	 void reloadMediaAndPlay(const QString &mediaPath);
 	 void play();
 	 void stop();
 	 void previous();
