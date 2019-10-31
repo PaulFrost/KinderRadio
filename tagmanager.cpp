@@ -19,9 +19,13 @@ void TagManager::loadTags()
 						 | QDir::Filter::NoDotDot
 						 | QDir::Filter::NoDot);
 
-	QStringList nameFilterList;
+	QStringList tagNameList(currentDir.entryList(QStringList(), filter));
 
-	m_Tags = currentDir.entryList(nameFilterList, filter);
+
+	foreach (const QString tagName, tagNameList) {
+		QSharedPointer<Tag> tag(new Tag(tagName));
+		m_Tags.insert(tagName, tag);
+	}
 
 	QFile file(LOG_FILE);
 	if(file.open(QIODevice::ReadOnly)){
@@ -38,13 +42,15 @@ void TagManager::loadTags()
 			i--;
 		}
 
-		m_lastTag = line.mid(DATE_FORMAT.size() + 2);
+		m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
+
+
 	}
 
-	emit tagsLoaded(m_Tags);
+	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()));
 }
 
-QString TagManager::lastTag() const
+QSharedPointer<Tag> TagManager::lastTag() const
 {
 	return m_lastTag;
 }
@@ -68,5 +74,5 @@ void TagManager::selectTag(const QString &tagId)
 	currentPath.cd("media");
 	currentPath.mkdir(tagId);
 
-	m_Tags.append(tagId);
+	m_Tags.insert(tagId, QSharedPointer<Tag>(new Tag(tagId)));
 }

@@ -2,7 +2,8 @@
 #define TAGMANAGER_H
 
 #include <QObject>
-#include <QHash>
+#include <QSharedPointer>
+#include "tag.h"
 
 class TagManager : public QObject
 {
@@ -11,11 +12,11 @@ public:
 	explicit TagManager(QObject *parent = nullptr);
 	void loadTags();
 
-	QString lastTag() const;
+	QSharedPointer<Tag> lastTag() const;
 
 private:
-	QStringList m_Tags;
-	QString m_lastTag;
+	QHash<QString, QSharedPointer<Tag> > m_Tags;
+	QSharedPointer<Tag> m_lastTag;
 
 signals:
 	void tagsLoaded(const QStringList &tagList);

@@ -7,8 +7,6 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-
-
 	PlayerWidget pw;
 
 	TagManager tagManager;
@@ -16,7 +14,11 @@ int main(int argc, char *argv[])
 	tagManager.loadTags();
 
 	MediaPlayer mediaPlayer;
-	mediaPlayer.reloadMedia(tagManager.lastTag());
+
+	if(tagManager.lastTag()){
+		mediaPlayer.reloadMedia(tagManager.lastTag()->id());
+	}
+
 
 	QObject::connect(&pw, &PlayerWidget::stopPressed,&mediaPlayer, &MediaPlayer::stop);
 	QObject::connect(&pw, &PlayerWidget::playPressed,&mediaPlayer, &MediaPlayer::play);
@@ -27,8 +29,9 @@ int main(int argc, char *argv[])
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMedia);
 	QObject::connect(&mediaPlayer, &MediaPlayer::statusChanged, &pw, &PlayerWidget::setStatusText);
 
-
-	pw.setCurrentTag(tagManager.lastTag());
+	if(tagManager.lastTag()){
+		pw.setCurrentTag(tagManager.lastTag()->id());
+	}
 	pw.show();
 
 	return a.exec();
