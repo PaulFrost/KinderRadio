@@ -21,8 +21,7 @@ SOURCES += \
         playerwidget.cpp \
         rfidinterface.cpp \
         tag.cpp \
-        tagmanager.cpp \
-        tagsettings.cpp
+        tagmanager.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -35,8 +34,7 @@ HEADERS += \
     playerwidget.h \
     rfidinterface.h \
     tag.h \
-    tagmanager.h \
-    tagsettings.h
+    tagmanager.h
 
 FORMS += \
     playerwidget.ui

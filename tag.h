@@ -2,27 +2,33 @@
 #define TAG_H
 
 #include <QObject>
-#include "tagsettings.h"
+#include <QFlag>
+#include <QDir>
 
 class Tag : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Tag(const QString &tagId = "", QObject *parent = nullptr);
+
+	enum TagType{Music, WifiOn, WifiOff, Shuffle, Restart, Shutdown};
+
+	explicit Tag(const QString &tagId = "", QDir mediaDir = QDir::current());
 	~Tag();
 
 	QString id() const;
 	void setId(const QString &id);
 
-	TagSettings::TagType type() const;
-	void setType(const TagSettings::TagType &type);
+	QFlags<TagType> type() const;
 
 private:
 	QString m_id;
-	TagSettings::TagType m_type;
+	QFlags<TagType> m_type;
+
+	void createDefaultSettings(const QDir directory);
+	void loadSettings(const QDir directory);
 
 signals:
-	void typeChanged(TagSettings::TagType type);
+	void typeChanged(TagType type);
 
 public slots:
 };

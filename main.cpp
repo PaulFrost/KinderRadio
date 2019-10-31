@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&pw, &PlayerWidget::previousPressed,&mediaPlayer, &MediaPlayer::previous);
 	QObject::connect(&pw, &PlayerWidget::nextPressed,&mediaPlayer, &MediaPlayer::next);
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &tagManager, &TagManager::selectTag);
-	QObject::connect(&pw, &PlayerWidget::tagSelected, &mediaPlayer, &MediaPlayer::reloadMediaAndPlay);
+	QObject::connect(&pw, &PlayerWidget::tagSelected, &mediaPlayer, &MediaPlayer::reloadMediaAndPlay);//@TBD: Go via TagManager
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMedia);
 	QObject::connect(&mediaPlayer, &MediaPlayer::statusChanged, &pw, &PlayerWidget::setStatusText);
 

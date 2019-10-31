@@ -13,17 +13,17 @@ TagManager::TagManager(QObject *parent) : QObject(parent)
 
 void TagManager::loadTags()
 {
-	QDir currentDir = QDir::current();
-	currentDir.cd("media");
+	QDir mediaDir = QDir::current();
+	mediaDir.cd("media");
 	QFlags<QDir::Filter> filter = (QDir::Filter::Dirs
 						 | QDir::Filter::NoDotDot
 						 | QDir::Filter::NoDot);
 
-	QStringList tagNameList(currentDir.entryList(QStringList(), filter));
+	QStringList tagNameList(mediaDir.entryList(QStringList(), filter));
 
 
 	foreach (const QString tagName, tagNameList) {
-		QSharedPointer<Tag> tag(new Tag(tagName));
+		QSharedPointer<Tag> tag(new Tag(tagName, mediaDir));
 		m_Tags.insert(tagName, tag);
 	}
 
@@ -70,9 +70,9 @@ void TagManager::selectTag(const QString &tagId)
 		return;
 	}
 
-	QDir currentPath = QDir::current();
-	currentPath.cd("media");
-	currentPath.mkdir(tagId);
+	QDir mediaDir = QDir::current();
+	mediaDir.cd("media");
+	mediaDir.mkdir(tagId);
 
-	m_Tags.insert(tagId, QSharedPointer<Tag>(new Tag(tagId)));
+	m_Tags.insert(tagId, QSharedPointer<Tag>(new Tag(tagId, mediaDir)));
 }
