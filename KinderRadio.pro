@@ -41,8 +41,9 @@ HEADERS += \
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/release/ -lbcm2835
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/debug/ -lbcm2835
-else:unix: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lbcm2835
+else:unix: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lbcm2835 -L/usr/local/lib -lwiringPi
 
+INCLUDEPATH += /usr/local/include
 
 CONFIG += link_pkgconfig
 
