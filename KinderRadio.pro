@@ -7,7 +7,7 @@ CONFIG -= app_bundle
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DEPRECATED_WARNINGS QT_DEBUG_PLUGINS
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -21,7 +21,8 @@ SOURCES += \
         playerwidget.cpp \
         rfidinterface.cpp \
         tag.cpp \
-        tagmanager.cpp
+        tagmanager.cpp \
+    MFRC522.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -34,7 +35,21 @@ HEADERS += \
     playerwidget.h \
     rfidinterface.h \
     tag.h \
-    tagmanager.h
+    tagmanager.h \
+    MFRC522.h \
+    bcm2835.h
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/release/ -lbcm2835
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/debug/ -lbcm2835
+else:unix: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lbcm2835
+
+
+CONFIG += link_pkgconfig
+
+PKGCONFIG += gstreamer-1.0 \
+        glib-2.0 \
+        gobject-2.0 \
+        gio-2.0
 
 FORMS += \
     playerwidget.ui

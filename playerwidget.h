@@ -18,7 +18,6 @@ public:
 	TagSelectorCB(QWidget *parent = nullptr);
 protected:
 	void keyPressEvent(QKeyEvent *e);
-	void focusOutEvent(QFocusEvent *);
 signals:
 	void lostFocus();
 };

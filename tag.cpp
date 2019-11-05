@@ -52,19 +52,19 @@ void Tag::loadSettings(const QDir directory)
 				continue;
 			}
 
-			if(line == "shuffle"){
+			if(line.startsWith("shuffle")){
 				m_type = TagType::Shuffle;
 			}
-			if(line == "wifion"){
+			if(line.startsWith("wifion")){
 				m_type = m_type | TagType::WifiOn;
 			}
-			if(line == "wifioff" && !m_type.testFlag(TagType::WifiOn)){
+			if(line.startsWith("wifioff") && !m_type.testFlag(TagType::WifiOn)){
 				m_type = m_type | TagType::WifiOff;
 			}
-			if(line == "restart"){
+			if(line.startsWith("restart")){
 				m_type = TagType::Restart;
 			}
-			if(line == "shutdown"){
+			if(line.startsWith("shutdown")){
 				m_type = TagType::Shutdown;
 			}
 		}

@@ -67,6 +67,13 @@ void TagManager::selectTag(const QString &tagId)
 	logFile.write(logString.toLocal8Bit());
 
 	if(m_Tags.contains(tagId)){
+		if(m_Tags[tagId]->type() == Tag::Music){
+			emit musicTagSelected(tagId);
+		}
+		else{
+			emit specialTagSelected(m_Tags[tagId]->type());
+		}
+
 		return;
 	}
 

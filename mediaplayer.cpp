@@ -2,6 +2,9 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QAudioDeviceInfo>
+#include <QAudioOutputSelectorControl>
+#include <QMediaService>
 #include <QMediaContent>
 
 MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
@@ -13,9 +16,12 @@ MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 	connect(m_mediaPlayer, SIGNAL(error(QMediaPlayer::Error)),
 			this, SLOT(onError(QMediaPlayer::Error)));
 
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    QList<QAudioDeviceInfo> devices =  QAudioDeviceInfo::availableDevices(QAudio::Mode::AudioOutput);
 
 	m_mediaPlayer->setPlaylist(m_mediaPlaylist);
-	m_mediaPlayer->setVolume(100);
+    m_mediaPlayer->setVolume(5);
+    
 }
 
 void MediaPlayer::reloadMedia(const QString &mediaPath)

@@ -2,6 +2,7 @@
 #include "ui_playerwidget.h"
 
 #include <QKeyEvent>
+#include <QDebug>
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
 	QWidget(parent),
@@ -59,6 +60,7 @@ void PlayerWidget::on_cbTagSelect_currentIndexChanged(const QString &arg1)
 
 void PlayerWidget::on_cbTagSelect_currentTextChanged(const QString &arg1)
 {
+	qDebug() << Q_FUNC_INFO;
 	m_temporaryTagName = arg1;
 }
 
@@ -67,13 +69,10 @@ TagSelectorCB::TagSelectorCB(QWidget *parent):QComboBox (parent)
 
 void TagSelectorCB::keyPressEvent(QKeyEvent *e)
 {
-	QComboBox::keyPressEvent(e);
 	if(e->key() == Qt::Key::Key_Enter){
 		clearFocus();
+		emit lostFocus();
 	}
+	QComboBox::keyPressEvent(e);
 }
 
-void TagSelectorCB::focusOutEvent(QFocusEvent *)
-{
-	emit lostFocus();
-}

@@ -21,6 +21,9 @@ private:
 signals:
 	void tagsLoaded(const QStringList &tagList);
 
+	void musicTagSelected(const QString &tagId);
+	void specialTagSelected(QFlags<Tag::TagType> tagType);
+
 public slots:
 	void selectTag(const QString &tagId);
 };
