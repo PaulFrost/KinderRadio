@@ -34,4 +34,5 @@ signals:
     void tagRecognized(const QString &tagId);
 };
 
+
 #endif // RFIDINTERFACE_H

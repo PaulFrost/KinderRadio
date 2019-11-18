@@ -1,4 +1,7 @@
 #include "rfidinterface.h"
+
+#if defined (_RASPBERRY_PI_)
+
 #include "MFRC522.h"
 
 #include <unistd.h>
@@ -63,3 +66,29 @@ void NFCWorker::searchForTags() {
 
 
 }
+
+#else
+
+
+RFIDInterface::RFIDInterface(QObject *parent)
+{
+	Q_UNUSED(parent)
+}
+
+RFIDInterface::~RFIDInterface()
+{
+
+}
+
+void RFIDInterface::handleTag(const QString &tagId)
+{
+	Q_UNUSED(tagId)
+}
+
+void NFCWorker::searchForTags()
+{
+
+}
+
+
+#endif

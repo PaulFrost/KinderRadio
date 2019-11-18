@@ -1,4 +1,11 @@
 #include <QApplication>
+
+#if !defined (__APPLE__) && !defined (_WIN32)
+	#define _RASPBERRY_PI_
+#else
+	#pragma message("No GPIO-Support! Build this Project on a Raspberry Pi.")
+#endif
+
 #include "mediaplayer.h"
 #include "playerwidget.h"
 #include "tagmanager.h"

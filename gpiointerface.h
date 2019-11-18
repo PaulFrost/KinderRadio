@@ -15,9 +15,6 @@ class GPIOWorker : public QThread
       void buttonPressed(int buttonId);
   };
 
-
-
-
 class GPIOInterface : public QObject
 {
 	Q_OBJECT
@@ -41,4 +38,4 @@ signals:
     void prevBurronPressed();
 };
 
-#endif // GPIOINTERFACE_H
+#endif

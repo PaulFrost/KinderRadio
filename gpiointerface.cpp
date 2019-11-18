@@ -1,4 +1,7 @@
 #include "gpiointerface.h"
+
+#if defined (_RASPBERRY_PI_)
+
 #include<wiringPi.h>
 
 #include<QDebug>
@@ -76,3 +79,27 @@ void GPIOWorker::checkButtonStatus()
         msleep(100);
     }
 }
+
+#else
+
+void GPIOWorker::checkButtonStatus()
+{
+
+}
+
+GPIOInterface::GPIOInterface(QObject *parent)
+{
+	Q_UNUSED(parent)
+}
+
+GPIOInterface::~GPIOInterface()
+{
+
+}
+
+void GPIOInterface::handleButtonStatus(int buttonId)
+{
+	Q_UNUSED(buttonId)
+}
+
+#endif

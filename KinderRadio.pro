@@ -21,8 +21,7 @@ SOURCES += \
         playerwidget.cpp \
         rfidinterface.cpp \
         tag.cpp \
-        tagmanager.cpp \
-    MFRC522.cpp
+        tagmanager.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -36,21 +35,27 @@ HEADERS += \
     rfidinterface.h \
     tag.h \
     tagmanager.h \
-    MFRC522.h \
-    bcm2835.h
+    MFRC522.cpp
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/release/ -lbcm2835
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/debug/ -lbcm2835
-else:unix: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lbcm2835 -L/usr/local/lib -lwiringPi
+unix:!macx: {
+    SOURCES += \
 
-INCLUDEPATH += /usr/local/include
+    HEADERS += \
+        MFRC522.h \
+        bcm2835.h
 
-CONFIG += link_pkgconfig
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib/ -lbcm2835 -lwiringPi
 
-PKGCONFIG += gstreamer-1.0 \
-        glib-2.0 \
-        gobject-2.0 \
-        gio-2.0
+    CONFIG += link_pkgconfig
+
+    PKGCONFIG += gstreamer-1.0 \
+            glib-2.0 \
+            gobject-2.0 \
+            gio-2.0
+}
+
+
 
 FORMS += \
     playerwidget.ui
