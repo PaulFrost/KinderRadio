@@ -15,11 +15,13 @@ DEFINES += QT_DEPRECATED_WARNINGS QT_DEBUG_PLUGINS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        filemanager.cpp \
         gpiointerface.cpp \
         main.cpp \
         mediaplayer.cpp \
         playerwidget.cpp \
         rfidinterface.cpp \
+        scriptmanager.cpp \
         tag.cpp \
         tagmanager.cpp
 
@@ -29,10 +31,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    filemanager.h \
     gpiointerface.h \
     mediaplayer.h \
     playerwidget.h \
     rfidinterface.h \
+    scriptmanager.h \
     tag.h \
     tagmanager.h \
     MFRC522.cpp

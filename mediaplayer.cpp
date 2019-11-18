@@ -48,11 +48,12 @@ void MediaPlayer::reloadMedia(const QString &mediaPath)
 	int mediaCount = 0;
 	for (int i = 0; i < list.size(); ++i) {
 		QFileInfo fileInfo = list.at(i);
-
-		m_mediaPlaylist->addMedia(QUrl::fromLocalFile(fileInfo.filePath()));
-		if(m_mediaPlaylist->mediaCount() > mediaCount){
-			qDebug() << QString("'%1' loaded").arg(fileInfo.fileName());
-			mediaCount++;
+		if(fileInfo.suffix() == "mp3"){
+			m_mediaPlaylist->addMedia(QUrl::fromLocalFile(fileInfo.filePath()));
+			if(m_mediaPlaylist->mediaCount() > mediaCount){
+				qDebug() << QString("'%1' loaded").arg(fileInfo.fileName());
+				mediaCount++;
+			}
 		}
 	}
 
