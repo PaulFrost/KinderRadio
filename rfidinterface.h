@@ -5,15 +5,15 @@
 #include <QThread>
 
 class NFCWorker : public QObject
-  {
-      Q_OBJECT
+{
+	Q_OBJECT
 
-  public slots:
-      void searchForTags();
+public slots:
+	void searchForTags();
 
-  signals:
-      void tagFound(const QString &tagId);
-  };
+signals:
+	void tagFound(const QString &tagId);
+};
 
 
 class RFIDInterface : public QObject
@@ -21,17 +21,17 @@ class RFIDInterface : public QObject
 	Q_OBJECT
 public:
 	explicit RFIDInterface(QObject *parent = nullptr);
-    ~RFIDInterface();
+	~RFIDInterface();
 
 private:
-    QThread m_nfcThread;
+	QThread m_nfcThread;
 
 public slots:
-    void handleTag(const QString &tagId);
+	void handleTag(const QString &tagId);
 
 signals:
-    void operate();
-    void tagRecognized(const QString &tagId);
+	void operate();
+	void tagRecognized(const QString &tagId);
 };
 
 
