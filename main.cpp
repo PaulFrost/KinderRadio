@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	MediaPlayer mediaPlayer;
 
 	if(tagManager.lastTag()){
-		mediaPlayer.reloadMedia(tagManager.lastTag()->id());
+		mediaPlayer.reloadMediaDir(tagManager.lastTag()->id());
 	}
 
 
@@ -41,9 +41,11 @@ int main(int argc, char *argv[])
 	QObject::connect(&pw, &PlayerWidget::nextPressed,&mediaPlayer, &MediaPlayer::next);
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &tagManager, &TagManager::selectTag);
 	QObject::connect(&pw, &PlayerWidget::tagSelected, &tagManager, &TagManager::selectTag);//@TBD: Go via TagManager
-	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMedia);
+	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMediaDir);
 	QObject::connect(&mediaPlayer, &MediaPlayer::statusChanged, &pw, &PlayerWidget::setStatusText);
-	QObject::connect(&tagManager, &TagManager::musicTagSelected, &mediaPlayer, &MediaPlayer::reloadMediaAndPlay);
+	QObject::connect(&tagManager, &TagManager::musicTagSelected, &mediaPlayer, &MediaPlayer::reloadMusicAndPlay);
+	QObject::connect(&tagManager, &TagManager::audioBookTagSelected, &mediaPlayer, &MediaPlayer::reloadAudioBookAndPlay);
+
 	QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &tagManager, &TagManager::selectTag);
 
 	QObject::connect(&gpioInterface, &GPIOInterface::pauseButtonPressed,&mediaPlayer, &MediaPlayer::stop);

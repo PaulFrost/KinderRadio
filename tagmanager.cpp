@@ -37,7 +37,7 @@ void TagManager::loadTags()
 		}
 
 		QSharedPointer<Tag> tag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
-		if(tag->type().testFlag(Tag::TagType::Music)){
+		if(tag->type().testFlag(Tag::TagType::Music) || tag->type().testFlag(Tag::TagType::Audiobook)){
 			m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
 		}
 	}

@@ -1,15 +1,22 @@
 #include "mediaplayer.h"
 
 #include <QDebug>
-#include <QDir>
 #include <QAudioDeviceInfo>
 #include <QAudioOutputSelectorControl>
 #include <QMediaService>
 #include <QMediaContent>
+#include <QFile>
+#include <QRegularExpression>
+
+static const char* AUDIOBOOK_SETTINGS_FILE = ".audiobook";
+
+static QString FILE_PATTERN("^(mp3|m4a)$");
+static QRegularExpression FILE_RE(FILE_PATTERN);
 
 MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 	m_mediaPlayer(new QMediaPlayer(this)),
-	m_mediaPlaylist(new QMediaPlaylist(this))
+	m_mediaPlaylist(new QMediaPlaylist(this)),
+	m_isAudioBook(false)
 {
 	connect(m_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
 			this, &MediaPlayer::onMediaStatusChanged);
@@ -23,10 +30,52 @@ MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 
 	m_mediaPlayer->setPlaylist(m_mediaPlaylist);
     m_mediaPlayer->setVolume(5);
-    
+
 }
 
-void MediaPlayer::reloadMedia(const QString &mediaPath)
+MediaPlayer::~MediaPlayer()
+{
+	saveAudioBookSettings();
+}
+
+void MediaPlayer::loadAudioBookSettings()
+{
+	if(m_isAudioBook){
+		QFile settingsFile(m_currentTagDir.filePath(AUDIOBOOK_SETTINGS_FILE));
+		if(settingsFile.open(QIODevice::ReadOnly)){
+			bool ok;
+			QString indexLine(settingsFile.readLine());
+			int index = indexLine.toInt(&ok);
+			if(ok){
+				m_mediaPlaylist->setCurrentIndex(index);
+				QString posLine(settingsFile.readLine());
+				qint64 pos = posLine.toLongLong(&ok);
+				if(ok){
+					m_mediaPlayer->setPosition(pos);
+					qDebug() << QString("Continuing audiobook at index: %1 and pos: %2").arg(index).arg(pos);
+				}
+				else {
+					qDebug() << QString("Continuing audiobook at index: %1").arg(index);
+				}
+			}
+			settingsFile.close();
+		}
+	}
+}
+
+void MediaPlayer::saveAudioBookSettings()
+{
+	if(m_isAudioBook){
+		QFile settingsFile(m_currentTagDir.filePath(AUDIOBOOK_SETTINGS_FILE));
+		if(settingsFile.open(QIODevice::WriteOnly)){
+			settingsFile.write(QString("%1\n%2").arg(m_mediaPlaylist->currentIndex()).arg(m_mediaPlayer->position()).toUtf8());
+			settingsFile.flush();
+			settingsFile.close();
+		}
+	}
+}
+
+void MediaPlayer::reloadMediaDir(const QString &mediaPath)
 {
 	if(mediaPath.isEmpty()){
 		return;
@@ -42,6 +91,7 @@ void MediaPlayer::reloadMedia(const QString &mediaPath)
 	if(!dir.cd(mediaPath)){
 		return;
 	}
+	m_currentTagDir = dir;
 
 	qDebug() << "Loading files from" << dir.path();
 	dir.setFilter(QDir::Files);
@@ -50,7 +100,9 @@ void MediaPlayer::reloadMedia(const QString &mediaPath)
 	int mediaCount = 0;
 	for (int i = 0; i < list.size(); ++i) {
 		QFileInfo fileInfo = list.at(i);
-		if(fileInfo.suffix() == "mp3"){
+
+		QRegularExpressionMatch reMatch = FILE_RE.match(fileInfo.suffix());
+		if(reMatch.hasMatch()){
 			m_mediaPlaylist->addMedia(QUrl::fromLocalFile(fileInfo.filePath()));
 			if(m_mediaPlaylist->mediaCount() > mediaCount){
 				qDebug() << QString("'%1' loaded").arg(fileInfo.fileName());
@@ -58,14 +110,28 @@ void MediaPlayer::reloadMedia(const QString &mediaPath)
 			}
 		}
 	}
-
-	m_mediaPlaylist->shuffle();
-	m_mediaPlaylist->setCurrentIndex(0);
 }
 
-void MediaPlayer::reloadMediaAndPlay(const QString &mediaPath)
+void MediaPlayer::reloadMusicAndPlay(const QString &mediaPath)
 {
-	reloadMedia(mediaPath);
+	if(m_isAudioBook){
+		saveAudioBookSettings();
+	}
+	m_isAudioBook = false;
+	reloadMediaDir(mediaPath);
+	m_mediaPlaylist->shuffle();
+	m_mediaPlaylist->setCurrentIndex(0);
+	play();
+}
+
+void MediaPlayer::reloadAudioBookAndPlay(const QString &mediaPath)
+{
+	if(m_isAudioBook){
+		saveAudioBookSettings();
+	}
+	m_isAudioBook = true;
+	reloadMediaDir(mediaPath);
+	loadAudioBookSettings();
 	play();
 }
 
@@ -81,13 +147,11 @@ void MediaPlayer::playPause()
 
 void MediaPlayer::play()
 {
-	qDebug() << Q_FUNC_INFO;
 	m_mediaPlayer->play();
 }
 
 void MediaPlayer::stop()
 {
-	qDebug() << Q_FUNC_INFO;
 	m_mediaPlayer->stop();
 }
 
@@ -125,6 +189,11 @@ void MediaPlayer::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
 		else {
 			emit statusChanged("No Media available!");
 		}
+		break;
+	case QMediaPlayer::MediaStatus::BufferedMedia:
+		emit statusChanged(QString("%1: %2")
+						   .arg(m_mediaPlayer->state()==QMediaPlayer::State::PlayingState ? "Playing" : "Paused")
+						   .arg(m_mediaPlaylist->currentMedia().canonicalUrl().fileName()));
 		break;
 	default:
 		break;

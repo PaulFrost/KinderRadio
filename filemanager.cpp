@@ -7,6 +7,13 @@ QDir FileManager::mediaDir()
 	return mediaDir;
 }
 
+QDir FileManager::tagDir(const QString &tagId)
+{
+	QDir mediaDir = FileManager::mediaDir();
+	mediaDir.cd(tagId);
+	return mediaDir;
+}
+
 QStringList FileManager::registeredTags()
 {
 	QFlags<QDir::Filter> filter = (QDir::Filter::Dirs
