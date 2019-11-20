@@ -19,7 +19,7 @@ private:
 	QSharedPointer<Tag> m_lastTag;
 
 signals:
-	void tagsLoaded(const QStringList &tagList);
+	void tagsLoaded(const QStringList &tagList, const QString &lastTag = QString());
 
 	void musicTagSelected(const QString &tagId);
 	void scriptTagSelected(const QString &tagId);

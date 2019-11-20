@@ -13,21 +13,23 @@ public:
 	explicit MediaPlayer(QObject *parent = nullptr);
 
 private:
-	 QMediaPlayer *m_mediaPlayer;
-	 QMediaPlaylist *m_mediaPlaylist;
+	QMediaPlayer *m_mediaPlayer;
+	QMediaPlaylist *m_mediaPlaylist;
 signals:
-	 void statusChanged(const QString &status);
+	void statusChanged(const QString &status);
 
 public slots:
-	 void reloadMedia(const QString &mediaPath);
-	 void reloadMediaAndPlay(const QString &mediaPath);
-	 void play();
-	 void stop();
-	 void previous();
-	 void next();
+	void reloadMedia(const QString &mediaPath);
+	void reloadMediaAndPlay(const QString &mediaPath);
+	void play();
+	void playPause();
+	void stop();
+	void previous();
+	void next();
 
-	 void onError(QMediaPlayer::Error error);
-	 void onMediaStatusChanged(QMediaPlayer::MediaStatus status);
+	void onError(QMediaPlayer::Error error);
+	void onMediaStatusChanged(QMediaPlayer::MediaStatus status);
+	void onStateChanged(QMediaPlayer::State state);
 };
 
 #endif // MEDIAPLAYER_H

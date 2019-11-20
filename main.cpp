@@ -36,8 +36,7 @@ int main(int argc, char *argv[])
 	ScriptManager scriptManager;
 	QObject::connect(&tagManager, &TagManager::scriptTagSelected, &scriptManager, &ScriptManager::loadScript);
 
-	QObject::connect(&pw, &PlayerWidget::stopPressed,&mediaPlayer, &MediaPlayer::stop);
-	QObject::connect(&pw, &PlayerWidget::playPressed,&mediaPlayer, &MediaPlayer::play);
+	QObject::connect(&pw, &PlayerWidget::playPausePressed,&mediaPlayer, &MediaPlayer::playPause);
 	QObject::connect(&pw, &PlayerWidget::previousPressed,&mediaPlayer, &MediaPlayer::previous);
 	QObject::connect(&pw, &PlayerWidget::nextPressed,&mediaPlayer, &MediaPlayer::next);
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &tagManager, &TagManager::selectTag);

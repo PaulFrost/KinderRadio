@@ -1,6 +1,6 @@
 #include "tag.h"
 
-const QString DEFAULT_SETTINGS = "#Uncomment the following lines to \n\n#load a script.sh file \n#script\n\nor to create an audiobook\n#audiobook";
+const QString DEFAULT_SETTINGS = "#Uncomment the following lines to \n\n#load a script.sh file \n#script\n\n#or to create an audiobook\n#audiobook";
 
 Tag::Tag(const QString &tagId, QDir mediaDir) : QObject(),
 	m_id(tagId)

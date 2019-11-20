@@ -36,8 +36,10 @@ void TagManager::loadTags()
 			i--;
 		}
 
-		m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
-
+		QSharedPointer<Tag> tag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
+		if(tag->type().testFlag(Tag::TagType::Music)){
+			m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
+		}
 	}
 
 	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()));
@@ -80,4 +82,5 @@ void TagManager::selectTag(const QString &tagId)
 	mediaDir.mkdir(tagId);
 
 	m_Tags.insert(tagId, QSharedPointer<Tag>(new Tag(tagId, mediaDir)));
+	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()), tagId);
 }

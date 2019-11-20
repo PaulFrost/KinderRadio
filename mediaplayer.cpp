@@ -13,6 +13,8 @@ MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 {
 	connect(m_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
 			this, &MediaPlayer::onMediaStatusChanged);
+	connect(m_mediaPlayer, &QMediaPlayer::stateChanged,
+			this, &MediaPlayer::onStateChanged);
 	connect(m_mediaPlayer, SIGNAL(error(QMediaPlayer::Error)),
 			this, SLOT(onError(QMediaPlayer::Error)));
 
@@ -67,6 +69,16 @@ void MediaPlayer::reloadMediaAndPlay(const QString &mediaPath)
 	play();
 }
 
+void MediaPlayer::playPause()
+{
+	if(m_mediaPlayer->state() == QMediaPlayer::PlayingState){
+		m_mediaPlayer->pause();
+	}
+	else{
+		m_mediaPlayer->play();
+	}
+}
+
 void MediaPlayer::play()
 {
 	qDebug() << Q_FUNC_INFO;
@@ -114,12 +126,6 @@ void MediaPlayer::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
 			emit statusChanged("No Media available!");
 		}
 		break;
-	case QMediaPlayer::MediaStatus::BufferedMedia:
-	{
-		QString fileName = m_mediaPlaylist->currentMedia().canonicalUrl().fileName();
-		emit statusChanged(QString("Playing: %1").arg(fileName));
-	}
-		break;
 	default:
 		break;
 	}
@@ -127,4 +133,23 @@ void MediaPlayer::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
 		emit statusChanged("Ready to play");
 	}
 
+}
+
+void MediaPlayer::onStateChanged(QMediaPlayer::State state)
+{
+	switch (state) {
+	case QMediaPlayer::State::PlayingState:{
+		QString fileName = m_mediaPlaylist->currentMedia().canonicalUrl().fileName();
+		emit statusChanged(QString("Playing: %1").arg(fileName));
+		break;
+	}
+	case QMediaPlayer::State::PausedState:{
+		QString fileName = m_mediaPlaylist->currentMedia().canonicalUrl().fileName();
+		emit statusChanged(QString("Paused: %1").arg(fileName));
+		break;
+	}
+	case QMediaPlayer::State::StoppedState:{
+		emit statusChanged(QString("Stopped"));
+	}
+	}
 }

@@ -2,6 +2,7 @@
 #include "ui_playerwidget.h"
 
 #include <QKeyEvent>
+#include <QInputDialog>
 #include <QDebug>
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
@@ -10,17 +11,17 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	connect(ui->pbStop, &QPushButton::clicked,
-			this, &PlayerWidget::stopPressed);
-	connect(ui->pbPlay, &QPushButton::clicked,
-			this, &PlayerWidget::playPressed);
+	connect(ui->pbPlayPause, &QPushButton::clicked,
+			this, &PlayerWidget::playPausePressed);
 	connect(ui->pbPrevious, &QPushButton::clicked,
 			this, &PlayerWidget::previousPressed);
 	connect(ui->pbNext, &QPushButton::clicked,
 			this, &PlayerWidget::nextPressed);
+	connect(ui->pbAddTag, &QPushButton::clicked,
+			this, &PlayerWidget::showAddNewTagDilog);
 
-	connect(ui->cbTagSelect, &TagSelectorCB::lostFocus,
-			this, &PlayerWidget::checkForNewTag);
+	connect(ui->cbTagSelect, &QComboBox::currentTextChanged,
+			this, &PlayerWidget::tagSelected);
 }
 
 PlayerWidget::~PlayerWidget()
@@ -38,10 +39,14 @@ void PlayerWidget::setCurrentTag(const QString &tag)
 	ui->cbTagSelect->setCurrentText(tag);
 }
 
-void PlayerWidget::populateCbTagSelect(const QStringList &tagIds)
+void PlayerWidget::populateCbTagSelect(const QStringList &tagIds, const QString &lastTag)
 {
 	ui->cbTagSelect->clear();
 	ui->cbTagSelect->addItems(tagIds);
+
+	if(!lastTag.isEmpty()){
+		ui->cbTagSelect->setCurrentText(lastTag);
+	}
 }
 
 void PlayerWidget::checkForNewTag()
@@ -52,27 +57,11 @@ void PlayerWidget::checkForNewTag()
 	}
 }
 
-
-void PlayerWidget::on_cbTagSelect_currentIndexChanged(const QString &arg1)
+void PlayerWidget::showAddNewTagDilog()
 {
-	emit tagSelected(arg1);
-}
-
-void PlayerWidget::on_cbTagSelect_currentTextChanged(const QString &arg1)
-{
-	qDebug() << Q_FUNC_INFO;
-	m_temporaryTagName = arg1;
-}
-
-TagSelectorCB::TagSelectorCB(QWidget *parent):QComboBox (parent)
-{}
-
-void TagSelectorCB::keyPressEvent(QKeyEvent *e)
-{
-	if(e->key() == Qt::Key::Key_Enter){
-		clearFocus();
-		emit lostFocus();
+	bool ok = false;
+	QString tagName = QInputDialog::getText(Q_NULLPTR, "Add tag", "Enter new tag id", QLineEdit::Normal, QString(), &ok);
+	if(ok){
+		emit this->newTagEntered(tagName);
 	}
-	QComboBox::keyPressEvent(e);
 }
-
