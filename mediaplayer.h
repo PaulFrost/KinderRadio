@@ -15,6 +15,7 @@ public:
 private:
 	 QMediaPlayer *m_mediaPlayer;
 	 QMediaPlaylist *m_mediaPlaylist;
+
 signals:
 	 void statusChanged(const QString &status);
 
@@ -25,6 +26,8 @@ public slots:
 	 void stop();
 	 void previous();
 	 void next();
+     void volUp();
+     void volDown();
 
 	 void onError(QMediaPlayer::Error error);
 	 void onMediaStatusChanged(QMediaPlayer::MediaStatus status);

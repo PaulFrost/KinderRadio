@@ -7,9 +7,13 @@
 #include <QMediaService>
 #include <QMediaContent>
 
+const int INITIAL_VOLUME = 5;
+const int MAX_VOLUME = 20;
+const int VOLUME_STEPS = 10;
+
 MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 	m_mediaPlayer(new QMediaPlayer(this)),
-	m_mediaPlaylist(new QMediaPlaylist(this))
+    m_mediaPlaylist(new QMediaPlaylist(this))
 {
 	connect(m_mediaPlayer, &QMediaPlayer::mediaStatusChanged,
 			this, &MediaPlayer::onMediaStatusChanged);
@@ -20,8 +24,7 @@ MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
     QList<QAudioDeviceInfo> devices =  QAudioDeviceInfo::availableDevices(QAudio::Mode::AudioOutput);
 
 	m_mediaPlayer->setPlaylist(m_mediaPlaylist);
-    m_mediaPlayer->setVolume(5);
-    
+    m_mediaPlayer->setVolume(INITIAL_VOLUME);
 }
 
 void MediaPlayer::reloadMedia(const QString &mediaPath)
@@ -85,7 +88,19 @@ void MediaPlayer::previous()
 
 void MediaPlayer::next()
 {
-	m_mediaPlaylist->next();
+    m_mediaPlaylist->next();
+}
+
+void MediaPlayer::volUp()
+{
+    int vol = qMin(m_mediaPlayer->volume() + MAX_VOLUME/VOLUME_STEPS, MAX_VOLUME);
+    m_mediaPlayer->setVolume(vol);
+}
+
+void MediaPlayer::volDown()
+{
+    int vol = qMax(m_mediaPlayer->volume() - MAX_VOLUME/VOLUME_STEPS, 0);
+    m_mediaPlayer->setVolume(vol);
 }
 
 void MediaPlayer::onError(QMediaPlayer::Error error)
