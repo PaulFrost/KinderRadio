@@ -1,9 +1,15 @@
 #include <QApplication>
+
+#if !defined (_RASPBERRY_PI_)
+#pragma message("No GPIO-Support! Build this Project on a Raspberry Pi.")
+#endif
+
 #include "mediaplayer.h"
 #include "playerwidget.h"
 #include "tagmanager.h"
 #include "rfidinterface.h"
 #include "gpiointerface.h"
+#include "scriptmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,28 +24,34 @@ int main(int argc, char *argv[])
 	MediaPlayer mediaPlayer;
 
 	if(tagManager.lastTag()){
-		mediaPlayer.reloadMedia(tagManager.lastTag()->id());
+		mediaPlayer.reloadMediaDir(tagManager.lastTag()->id());
 	}
 
 
-    RFIDInterface rfidInterface;
-    GPIOInterface gpioInterface;
+	RFIDInterface rfidInterface;
+	GPIOInterface gpioInterface;
 
-	QObject::connect(&pw, &PlayerWidget::stopPressed,&mediaPlayer, &MediaPlayer::stop);
-	QObject::connect(&pw, &PlayerWidget::playPressed,&mediaPlayer, &MediaPlayer::play);
+	ScriptManager scriptManager;
+	QObject::connect(&tagManager, &TagManager::scriptTagSelected, &scriptManager, &ScriptManager::loadScript);
+
+	QObject::connect(&pw, &PlayerWidget::playPausePressed,&mediaPlayer, &MediaPlayer::playPause);
 	QObject::connect(&pw, &PlayerWidget::previousPressed,&mediaPlayer, &MediaPlayer::previous);
 	QObject::connect(&pw, &PlayerWidget::nextPressed,&mediaPlayer, &MediaPlayer::next);
 	QObject::connect(&pw, &PlayerWidget::newTagEntered, &tagManager, &TagManager::selectTag);
 	QObject::connect(&pw, &PlayerWidget::tagSelected, &tagManager, &TagManager::selectTag);//@TBD: Go via TagManager
-	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMedia);
+	QObject::connect(&pw, &PlayerWidget::newTagEntered, &mediaPlayer, &MediaPlayer::reloadMediaDir);
+	QObject::connect(&pw, &PlayerWidget::volUpPressed, &mediaPlayer, &MediaPlayer::volUp);
+	QObject::connect(&pw, &PlayerWidget::volDownPressed, &mediaPlayer, &MediaPlayer::volDown);
 	QObject::connect(&mediaPlayer, &MediaPlayer::statusChanged, &pw, &PlayerWidget::setStatusText);
-	QObject::connect(&tagManager, &TagManager::musicTagSelected, &mediaPlayer, &MediaPlayer::reloadMediaAndPlay);
-    QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &tagManager, &TagManager::selectTag);
+	QObject::connect(&tagManager, &TagManager::musicTagSelected, &mediaPlayer, &MediaPlayer::reloadMusicAndPlay);
+	QObject::connect(&tagManager, &TagManager::audioBookTagSelected, &mediaPlayer, &MediaPlayer::reloadAudioBookAndPlay);
 
-    QObject::connect(&gpioInterface, &GPIOInterface::pauseButtonPressed,&mediaPlayer, &MediaPlayer::stop);
-    QObject::connect(&gpioInterface, &GPIOInterface::playButtonPressed,&mediaPlayer, &MediaPlayer::play);
-    QObject::connect(&gpioInterface, &GPIOInterface::prevBurronPressed,&mediaPlayer, &MediaPlayer::previous);
-    QObject::connect(&gpioInterface, &GPIOInterface::nextButtonPressed,&mediaPlayer, &MediaPlayer::next);
+	QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &tagManager, &TagManager::selectTag);
+
+	QObject::connect(&gpioInterface, &GPIOInterface::pauseButtonPressed,&mediaPlayer, &MediaPlayer::stop);
+	QObject::connect(&gpioInterface, &GPIOInterface::playButtonPressed,&mediaPlayer, &MediaPlayer::play);
+	QObject::connect(&gpioInterface, &GPIOInterface::prevBurronPressed,&mediaPlayer, &MediaPlayer::previous);
+	QObject::connect(&gpioInterface, &GPIOInterface::nextButtonPressed,&mediaPlayer, &MediaPlayer::next);
 
 	if(tagManager.lastTag()){
 		pw.setCurrentTag(tagManager.lastTag()->id());

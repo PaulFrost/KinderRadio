@@ -1,6 +1,6 @@
 #include "tag.h"
 
-const QString DEFAULT_SETTINGS = "#shuffle\n#wifion #or wifioff\n#restart\n#shutdown";
+const QString DEFAULT_SETTINGS = "#Uncomment the following lines to \n\n#load a script.sh file \n#script\n\n#or to create an audiobook\n#audiobook";
 
 Tag::Tag(const QString &tagId, QDir mediaDir) : QObject(),
 	m_id(tagId)
@@ -48,24 +48,16 @@ void Tag::loadSettings(const QDir directory)
 
 		foreach(QString line, lines){
 			line = line.simplified();
-			if(line.at(0) == '#'){
+
+			if(line.count() < 1 || line.at(0) == '#'){
 				continue;
 			}
 
-			if(line.startsWith("shuffle")){
-				m_type = TagType::Shuffle;
+			if(line.startsWith("script")){
+				m_type = m_type | TagType::Script;
 			}
-			if(line.startsWith("wifion")){
-				m_type = m_type | TagType::WifiOn;
-			}
-			if(line.startsWith("wifioff") && !m_type.testFlag(TagType::WifiOn)){
-				m_type = m_type | TagType::WifiOff;
-			}
-			if(line.startsWith("restart")){
-				m_type = TagType::Restart;
-			}
-			if(line.startsWith("shutdown")){
-				m_type = TagType::Shutdown;
+			if(line.startsWith("audiobook")){
+				m_type = m_type | TagType::Audiobook;
 			}
 		}
 	}

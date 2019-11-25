@@ -1,4 +1,5 @@
 #include "tagmanager.h"
+#include "filemanager.h"
 
 #include <QDir>
 #include <QDateTime>
@@ -13,17 +14,10 @@ TagManager::TagManager(QObject *parent) : QObject(parent)
 
 void TagManager::loadTags()
 {
-	QDir mediaDir = QDir::current();
-	mediaDir.cd("media");
-	QFlags<QDir::Filter> filter = (QDir::Filter::Dirs
-						 | QDir::Filter::NoDotDot
-						 | QDir::Filter::NoDot);
-
-	QStringList tagNameList(mediaDir.entryList(QStringList(), filter));
-
+	QStringList tagNameList = FileManager::registeredTags();
 
 	foreach (const QString tagName, tagNameList) {
-		QSharedPointer<Tag> tag(new Tag(tagName, mediaDir));
+		QSharedPointer<Tag> tag(new Tag(tagName, FileManager::mediaDir()));
 		m_Tags.insert(tagName, tag);
 	}
 
@@ -42,9 +36,10 @@ void TagManager::loadTags()
 			i--;
 		}
 
-		m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
-
-
+		QSharedPointer<Tag> tag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
+		if(tag->type().testFlag(Tag::TagType::Music) || tag->type().testFlag(Tag::TagType::Audiobook)){
+			m_lastTag = m_Tags[line.mid(DATE_FORMAT.size() + 2)];
+		}
 	}
 
 	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()));
@@ -67,11 +62,16 @@ void TagManager::selectTag(const QString &tagId)
 	logFile.write(logString.toLocal8Bit());
 
 	if(m_Tags.contains(tagId)){
-		if(m_Tags[tagId]->type() == Tag::Music){
+		if(m_Tags[tagId]->type().testFlag(Tag::Music)){
 			emit musicTagSelected(tagId);
 		}
-		else{
-			emit specialTagSelected(m_Tags[tagId]->type());
+
+		if(m_Tags[tagId]->type().testFlag(Tag::Script)){
+			emit scriptTagSelected(tagId);
+		}
+
+		if(m_Tags[tagId]->type().testFlag(Tag::Audiobook)){
+			emit audioBookTagSelected(tagId);
 		}
 
 		return;
@@ -82,4 +82,5 @@ void TagManager::selectTag(const QString &tagId)
 	mediaDir.mkdir(tagId);
 
 	m_Tags.insert(tagId, QSharedPointer<Tag>(new Tag(tagId, mediaDir)));
+	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()), tagId);
 }

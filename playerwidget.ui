@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
-    <height>189</height>
+    <width>459</width>
+    <height>203</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,9 +39,25 @@
         </widget>
        </item>
        <item>
-        <widget class="TagSelectorCB" name="cbTagSelect">
-         <property name="editable">
-          <bool>true</bool>
+        <widget class="QComboBox" name="cbTagSelect">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pbAddTag">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>+</string>
          </property>
         </widget>
        </item>
@@ -49,6 +65,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="leStatus">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -57,7 +76,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="pbStop">
+        <widget class="QPushButton" name="pbPlayPause">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -65,20 +84,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Stop</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pbPlay">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>70</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Play</string>
+          <string>Play/Pause</string>
          </property>
         </widget>
        </item>
@@ -108,6 +114,24 @@
          </property>
         </widget>
        </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pbVolUp">
+           <property name="text">
+            <string>Vol Up</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbVolDown">
+           <property name="text">
+            <string>Vol Down</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </item>
      <item>
@@ -127,13 +151,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>TagSelectorCB</class>
-   <extends>QComboBox</extends>
-   <header>playerwidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

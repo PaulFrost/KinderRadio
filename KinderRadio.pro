@@ -15,14 +15,15 @@ DEFINES += QT_DEPRECATED_WARNINGS QT_DEBUG_PLUGINS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        filemanager.cpp \
         gpiointerface.cpp \
         main.cpp \
         mediaplayer.cpp \
         playerwidget.cpp \
         rfidinterface.cpp \
+        scriptmanager.cpp \
         tag.cpp \
-        tagmanager.cpp \
-    MFRC522.cpp
+        tagmanager.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -30,27 +31,37 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    filemanager.h \
     gpiointerface.h \
     mediaplayer.h \
     playerwidget.h \
     rfidinterface.h \
+    scriptmanager.h \
     tag.h \
-    tagmanager.h \
-    MFRC522.h \
-    bcm2835.h
+    tagmanager.h
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/release/ -lbcm2835
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/local/lib/debug/ -lbcm2835
-else:unix: LIBS += -L$$PWD/../../../../../usr/local/lib/ -lbcm2835 -L/usr/local/lib -lwiringPi
+unix:!macx: {
+    SOURCES += \
+        MFRC522.cpp
 
-INCLUDEPATH += /usr/local/include
+    HEADERS += \
+        MFRC522.h \
+        bcm2835.h
 
-CONFIG += link_pkgconfig
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib/ -lbcm2835 -lwiringPi
 
-PKGCONFIG += gstreamer-1.0 \
-        glib-2.0 \
-        gobject-2.0 \
-        gio-2.0
+    DEFINES += _RASPBERRY_PI_
+
+    CONFIG += link_pkgconfig
+
+    PKGCONFIG += gstreamer-1.0 \
+            glib-2.0 \
+            gobject-2.0 \
+            gio-2.0
+}
+
+
 
 FORMS += \
     playerwidget.ui

@@ -10,7 +10,7 @@ class Tag : public QObject
 	Q_OBJECT
 public:
 
-	enum TagType{Music, WifiOn, WifiOff, Shuffle, Restart, Shutdown};
+	enum TagType{Music, Script, Audiobook};
 
 	explicit Tag(const QString &tagId = "", QDir mediaDir = QDir::current());
 	~Tag();

@@ -5,40 +5,37 @@
 #include <QThread>
 
 class GPIOWorker : public QThread
-  {
-      Q_OBJECT
+{
+	Q_OBJECT
 
-  public slots:
-      void checkButtonStatus();
+public slots:
+	void checkButtonStatus();
 
-  signals:
-      void buttonPressed(int buttonId);
-  };
-
-
-
+signals:
+	void buttonPressed(int buttonId);
+};
 
 class GPIOInterface : public QObject
 {
 	Q_OBJECT
 public:
 	explicit GPIOInterface(QObject *parent = nullptr);
-    ~GPIOInterface();
+	~GPIOInterface();
 
 private:
-    QThread m_gpioThread;
+	QThread m_gpioThread;
 signals:
 	void nextPressed();
 
 public slots:
-    void handleButtonStatus(int buttonId);
+	void handleButtonStatus(int buttonId);
 
 signals:
-    void operate();
-    void playButtonPressed();
-    void pauseButtonPressed();
-    void nextButtonPressed();
-    void prevBurronPressed();
+	void operate();
+	void playButtonPressed();
+	void pauseButtonPressed();
+	void nextButtonPressed();
+	void prevBurronPressed();
 };
 
-#endif // GPIOINTERFACE_H
+#endif
