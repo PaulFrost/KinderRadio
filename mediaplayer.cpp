@@ -78,10 +78,10 @@ void MediaPlayer::saveAudioBookSettings()
 	}
 }
 
-void MediaPlayer::reloadMediaDir(const QString &mediaPath)
+bool MediaPlayer::reloadMediaDir(const QString &mediaPath)
 {
 	if(mediaPath.isEmpty()){
-		return;
+		return false;
 	}
 
 	m_mediaPlaylist->clear();
@@ -92,12 +92,12 @@ void MediaPlayer::reloadMediaDir(const QString &mediaPath)
 	QDir dir(QDir::currentPath());
 	dir.cd("media");
 	if(!dir.cd(mediaPath)){
-		return;
+		return false;
 	}
 	m_currentTagDir = dir;
-
+	qDebug() << mediaPath;
 	qDebug() << "Loading files from" << dir.path();
-	dir.setFilter(QDir::Files);
+	dir.setFilter(QDir::Files | QDir::NoDot | QDir::NoDotDot);
 
 	QFileInfoList list = dir.entryInfoList();
 	int mediaCount = 0;
@@ -106,6 +106,7 @@ void MediaPlayer::reloadMediaDir(const QString &mediaPath)
 
 		QRegularExpressionMatch reMatch = FILE_RE.match(fileInfo.suffix());
 		if(reMatch.hasMatch()){
+			qDebug() << fileInfo.filePath();
 			m_mediaPlaylist->addMedia(QUrl::fromLocalFile(fileInfo.filePath()));
 			if(m_mediaPlaylist->mediaCount() > mediaCount){
 				qDebug() << QString("'%1' loaded").arg(fileInfo.fileName());
@@ -113,6 +114,12 @@ void MediaPlayer::reloadMediaDir(const QString &mediaPath)
 			}
 		}
 	}
+
+	if(!mediaCount){
+		return false;
+	}
+
+	return true;
 }
 
 void MediaPlayer::reloadMusicAndPlay(const QString &mediaPath)
@@ -120,8 +127,11 @@ void MediaPlayer::reloadMusicAndPlay(const QString &mediaPath)
 	if(m_isAudioBook){
 		saveAudioBookSettings();
 	}
+	stop();
 	m_isAudioBook = false;
-	reloadMediaDir(mediaPath);
+	if(!reloadMediaDir(mediaPath)){
+		return;
+	}
 	m_mediaPlaylist->shuffle();
 	m_mediaPlaylist->setCurrentIndex(0);
 	play();

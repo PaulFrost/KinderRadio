@@ -10,7 +10,7 @@ class Tag : public QObject
 	Q_OBJECT
 public:
 
-	enum TagType{Music, Script, Audiobook};
+	enum TagType{None, Music, Script, Audiobook};
 
 	explicit Tag(const QString &tagId = "", QDir mediaDir = QDir::current());
 	~Tag();
@@ -23,6 +23,7 @@ public:
 private:
 	QString m_id;
 	QFlags<TagType> m_type;
+	QDir m_tagDir;
 
 	void createDefaultSettings(const QDir directory);
 	void loadSettings(const QDir directory);
@@ -31,6 +32,7 @@ signals:
 	void typeChanged(TagType type);
 
 public slots:
+	void loadSettings();
 };
 
 #endif // TAG_H

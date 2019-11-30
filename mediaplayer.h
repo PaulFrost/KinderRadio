@@ -27,7 +27,7 @@ signals:
 	void statusChanged(const QString &status);
 
 public slots:
-	void reloadMediaDir(const QString &mediaPath);
+	bool reloadMediaDir(const QString &mediaPath);
 	void reloadMusicAndPlay(const QString &mediaPath);
 	void reloadAudioBookAndPlay(const QString &mediaPath);
 	void play();
