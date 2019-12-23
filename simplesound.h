@@ -14,11 +14,13 @@ public:
 
 private:
 	QSound m_bellSound;
+	QSound m_newTagSound;
 
 signals:
 
 public slots:
 	void playBell();
+	void playNewTagEntered();
 };
 
 #endif // SIMPLESOUND_H
