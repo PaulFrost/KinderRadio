@@ -95,14 +95,17 @@ void TagManager::selectTag(const QString &tagId)
 		if(tag->type().testFlag(Tag::Music)){
 			qDebug()<< "Music Tag" << tagId;
 			emit musicTagSelected(tag->directoryName());
+			return;
 		}
 		if(tag->type().testFlag(Tag::Script)){
 			qDebug()<< "Script Tag" << tagId;
 			emit scriptTagSelected(tag->directoryName());
+			return;
 		}
 		if(tag->type().testFlag(Tag::Audiobook)){
 			qDebug()<< "Audiobook Tag" << tagId;
 			emit audioBookTagSelected(tag->directoryName());
+			return;
 		}
 		return;
 	}
