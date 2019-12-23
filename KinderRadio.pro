@@ -67,3 +67,6 @@ unix:!macx: {
 
 FORMS += \
     playerwidget.ui
+
+DISTFILES += \
+    build-scripts/linuxgcc.sh
