@@ -6,10 +6,11 @@
 
 #include<QDebug>
 
-#define RED_BUTTON 7
-#define BLUE_BUTTON 0
-#define GREEN_BUTTON 2
-#define BLACK_BUTTON 3
+#define PLAYPAUSE_BUTTON 2
+#define NEXT_BUTTON 3
+#define PREVIOUS_BUTTON 4
+#define VOL_UP_BUTTON 22
+#define VOL_DOWN_BUTTON 26
 
 GPIOInterface::GPIOInterface(QObject *parent) : QObject(parent)
 {
@@ -32,21 +33,25 @@ void GPIOInterface::handleButtonStatus(int buttonId)
 {
 
 	switch (buttonId) {
-	case RED_BUTTON:
-		qDebug() << "pause";
-		emit this->pauseButtonPressed();
+	case PLAYPAUSE_BUTTON:
+		qDebug() << "playpause";
+		emit this->playPauseButtonPressed();
 		break;
-	case BLUE_BUTTON:
+	case NEXT_BUTTON:
 		qDebug() << "next";
 		emit this->nextButtonPressed();
 		break;
-	case GREEN_BUTTON:
-		qDebug() << "play";
-		emit this->playButtonPressed();
-		break;
-	case BLACK_BUTTON:
+	case PREVIOUS_BUTTON:
 		qDebug() << "prev";
 		emit this->prevBurronPressed();
+		break;
+	case VOL_UP_BUTTON:
+		qDebug() << "volUp";
+		emit this->volUpPressed();
+		break;
+	case VOL_DOWN_BUTTON:
+		qDebug() << "volDown";
+		emit this->volDownPressed();
 		break;
 	}
 }
@@ -54,26 +59,30 @@ void GPIOInterface::handleButtonStatus(int buttonId)
 void GPIOWorker::checkButtonStatus()
 {
 	wiringPiSetup();
-	pullUpDnControl(RED_BUTTON, PUD_UP);
-	pullUpDnControl(BLUE_BUTTON, PUD_UP);
-	pullUpDnControl(GREEN_BUTTON, PUD_UP);
-	pullUpDnControl(BLACK_BUTTON, PUD_UP);
+	pullUpDnControl(PLAYPAUSE_BUTTON, PUD_UP);
+	pullUpDnControl(NEXT_BUTTON, PUD_UP);
+	pullUpDnControl(PREVIOUS_BUTTON, PUD_UP);
+	pullUpDnControl(VOL_UP_BUTTON, PUD_UP);
+	pullUpDnControl(VOL_DOWN_BUTTON, PUD_UP);
 	//    switch (buttonId) {
 
 	//    }
 
 	while(1){
-		if(digitalRead(RED_BUTTON) == LOW){
-			emit this->buttonPressed(RED_BUTTON);
+		if(digitalRead(PLAYPAUSE_BUTTON) == LOW){
+			emit this->buttonPressed(PLAYPAUSE_BUTTON);
 		}
-		if(digitalRead(BLUE_BUTTON) == LOW){
-			emit this->buttonPressed(BLUE_BUTTON);
+		if(digitalRead(NEXT_BUTTON) == LOW){
+			emit this->buttonPressed(NEXT_BUTTON);
 		}
-		if(digitalRead(GREEN_BUTTON) == LOW){
-			emit this->buttonPressed(GREEN_BUTTON);
+		if(digitalRead(PREVIOUS_BUTTON) == LOW){
+			emit this->buttonPressed(PREVIOUS_BUTTON);
 		}
-		if(digitalRead(BLACK_BUTTON) == LOW){
-			emit this->buttonPressed(BLACK_BUTTON);
+		if(digitalRead(VOL_UP_BUTTON) == LOW){
+			emit this->buttonPressed(VOL_UP_BUTTON);
+		}
+		if(digitalRead(VOL_DOWN_BUTTON) == LOW){
+			emit this->buttonPressed(VOL_DOWN_BUTTON);
 		}
 
 		msleep(100);

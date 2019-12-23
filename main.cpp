@@ -10,6 +10,7 @@
 #include "rfidinterface.h"
 #include "gpiointerface.h"
 #include "scriptmanager.h"
+#include "simplesound.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,13 +23,14 @@ int main(int argc, char *argv[])
 
 	MediaPlayer mediaPlayer;
 	if(tagManager.lastTag()){
-		mediaPlayer.reloadMediaDir(tagManager.lastTag()->id());
+		mediaPlayer.reloadMediaDir(tagManager.lastTag()->directoryName());
 	}
 
 	RFIDInterface rfidInterface;
 	GPIOInterface gpioInterface;
-
 	ScriptManager scriptManager;
+	SimpleSound simpleSound;
+
 	QObject::connect(&tagManager, &TagManager::scriptTagSelected, &scriptManager, &ScriptManager::loadScript);
 	QObject::connect(&pw, &PlayerWidget::playPausePressed,&mediaPlayer, &MediaPlayer::playPause);
 	QObject::connect(&pw, &PlayerWidget::previousPressed,&mediaPlayer, &MediaPlayer::previous);
@@ -41,16 +43,22 @@ int main(int argc, char *argv[])
 	QObject::connect(&mediaPlayer, &MediaPlayer::statusChanged, &pw, &PlayerWidget::setStatusText);
 	QObject::connect(&tagManager, &TagManager::musicTagSelected, &mediaPlayer, &MediaPlayer::reloadMusicAndPlay);
 	QObject::connect(&tagManager, &TagManager::audioBookTagSelected, &mediaPlayer, &MediaPlayer::reloadAudioBookAndPlay);
-	QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &tagManager, &TagManager::selectTag);
+	QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &tagManager, &TagManager::selectTag, Qt::DirectConnection);
+	QObject::connect(&rfidInterface, &RFIDInterface::tagRecognized, &pw, &PlayerWidget::setCurrentTagSilently);
 	QObject::connect(&gpioInterface, &GPIOInterface::pauseButtonPressed,&mediaPlayer, &MediaPlayer::stop);
-	QObject::connect(&gpioInterface, &GPIOInterface::playButtonPressed,&mediaPlayer, &MediaPlayer::play);
+	QObject::connect(&gpioInterface, &GPIOInterface::playPauseButtonPressed,&mediaPlayer, &MediaPlayer::playPause);
 	QObject::connect(&gpioInterface, &GPIOInterface::prevBurronPressed,&mediaPlayer, &MediaPlayer::previous);
 	QObject::connect(&gpioInterface, &GPIOInterface::nextButtonPressed,&mediaPlayer, &MediaPlayer::next);
+	QObject::connect(&gpioInterface, &GPIOInterface::volUpPressed, &mediaPlayer, &MediaPlayer::volUp);
+	QObject::connect(&gpioInterface, &GPIOInterface::volDownPressed, &mediaPlayer, &MediaPlayer::volDown);
 
 	if(tagManager.lastTag()){
 		pw.setCurrentTag(tagManager.lastTag()->id());
 	}
 	pw.show();
+
+	SimpleSound::playStartupSound();
+	QObject::connect(&tagManager, &TagManager::musicTagSelected, &simpleSound, &SimpleSound::playBell);
 
 	return a.exec();
 }

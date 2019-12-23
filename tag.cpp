@@ -1,11 +1,13 @@
 #include "tag.h"
+#include <QDebug>
 
 const QString DEFAULT_SETTINGS = "#Uncomment the following lines to \n\n#load music with this tag \nmusic\n \n\n#load a script.sh file \n#script\n\n#or to create an audiobook\n#audiobook";
 
-Tag::Tag(const QString &tagId, QDir mediaDir) : QObject(),
-	m_id(tagId)
+Tag::Tag(const QString &tagId, const QString &name, QDir mediaDir) : QObject(),
+	m_id(tagId),
+	m_name(name)
 {
-	mediaDir.cd(tagId);
+	mediaDir.cd(directoryName());
 	m_tagDir = mediaDir;
 	loadSettings(mediaDir);
 }
@@ -28,6 +30,24 @@ void Tag::setId(const QString &id)
 QFlags<Tag::TagType> Tag::type() const
 {
 	return m_type;
+}
+
+QString Tag::name() const
+{
+	return m_name;
+}
+
+void Tag::setName(const QString &name)
+{
+	m_name = name;
+}
+
+QString Tag::directoryName() const
+{
+	if(m_name.isEmpty()){
+		return m_id;
+	}
+	return m_id + "--" + m_name;
 }
 
 void Tag::createDefaultSettings(const QDir directory)
@@ -56,19 +76,25 @@ void Tag::loadSettings(const QDir directory)
 		QString allLines = file.readAll();
 		QStringList lines = allLines.split("\n");
 
+		qDebug() << Q_FUNC_INFO << lines;
+
 		foreach(QString line, lines){
 			line = line.simplified();
+
 
 			if(line.count() < 1 || line.at(0) == '#'){
 				continue;
 			}
 			if(line.startsWith("music")){
+				qDebug() << Q_FUNC_INFO << "music" << line;
 				m_type = m_type | TagType::Music;
 			}
 			if(line.startsWith("script")){
+				qDebug() << Q_FUNC_INFO << "script" << line;
 				m_type = m_type | TagType::Script;
 			}
 			if(line.startsWith("audiobook")){
+				qDebug() << Q_FUNC_INFO << "audiobook" << line;
 				m_type = m_type | TagType::Audiobook;
 			}
 		}

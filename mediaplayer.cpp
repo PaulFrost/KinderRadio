@@ -55,7 +55,7 @@ void MediaPlayer::loadAudioBookSettings()
 				qint64 pos = posLine.toLongLong(&ok);
 				if(ok){
 					m_mediaPlayer->setPosition(pos);
-					qDebug() << QString("Continuing audiobook at index: %1 and pos: %2").arg(index).arg(pos);
+					qDebug() << QString("Continuing audiobook at index: %1 and pos: %2 (%3)").arg(index).arg(pos).arg(m_mediaPlayer->position());
 				}
 				else {
 					qDebug() << QString("Continuing audiobook at index: %1").arg(index);

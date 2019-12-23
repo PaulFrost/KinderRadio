@@ -19,11 +19,12 @@ private:
 	QSharedPointer<Tag> m_lastTag;
 
 signals:
-	void tagsLoaded(const QStringList &tagList, const QString &lastTag = QString());
+	void newTagAdded(const QString &tagId);
+	void tagsLoaded(const QStringList &tagIds, const QStringList &tagNames, const QString &lastTag = QString());
 
-	void musicTagSelected(const QString &tagId);
-	void scriptTagSelected(const QString &tagId);
-	void audioBookTagSelected(const QString &tagId);
+	void musicTagSelected(const QString &tagIdName);
+	void scriptTagSelected(const QString &tagIdName);
+	void audioBookTagSelected(const QString &tagIdName);
 
 public slots:
 	void selectTag(const QString &tagId);

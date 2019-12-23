@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QDebug>
+#include <QSharedPointer>
 #include <QScopedPointer>
 #include <QProcess>
 
@@ -17,15 +18,28 @@ TagManager::TagManager(QObject *parent) : QObject(parent)
 
 void TagManager::loadTags()
 {
-	QStringList tagNameList = FileManager::registeredTags();
+	QStringList tagIdNameList = FileManager::registeredTags();
 
-	foreach (const QString tagName, tagNameList) {
-		QSharedPointer<Tag> tag(new Tag(tagName, FileManager::mediaDir()));
-		m_Tags.insert(tagName, tag);
+	QStringList tagIdList;
+	QStringList tagNameList;
+
+	foreach (const QString tagIdName, tagIdNameList) {
+		QStringList idNameList = tagIdName.split("--");
+		QString id = idNameList[0];
+		QString name = "";
+
+
+
+		if(idNameList.count() > 1){
+			name = idNameList[1];
+			qDebug()<<id<<name;
+		}
+		tagIdList << id;
+		tagNameList << name;
+		QSharedPointer<Tag> tag(new Tag(id, name, FileManager::mediaDir()));
+
+		m_Tags.insert(id, tag);
 	}
-
-	qDebug() << "loadTags";
-
 	QString tagId;
 
 	QFile file(LOG_FILE);
@@ -52,7 +66,7 @@ void TagManager::loadTags()
 		}
 	}
 
-	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()));
+	emit tagsLoaded(tagIdList, tagNameList);
 }
 
 QSharedPointer<Tag> TagManager::lastTag() const
@@ -62,6 +76,8 @@ QSharedPointer<Tag> TagManager::lastTag() const
 
 void TagManager::selectTag(const QString &tagId)
 {
+	qDebug()<< Q_FUNC_INFO << tagId << m_Tags.keys();
+
 	QString logString = QDateTime::currentDateTime().toString(DATE_FORMAT);
 	logString.append(": ");
 	logString.append(tagId);
@@ -73,18 +89,20 @@ void TagManager::selectTag(const QString &tagId)
 
 
 	if(m_Tags.contains(tagId)){
-		m_Tags[tagId]->loadSettings();
-		if(m_Tags[tagId]->type().testFlag(Tag::Music)){
-			qDebug()<< "Music Tag";
-			emit musicTagSelected(tagId);
+		qDebug()<< "m_Tags.contains " << tagId;
+		QSharedPointer<Tag> tag = m_Tags[tagId];
+		tag->loadSettings();
+		if(tag->type().testFlag(Tag::Music)){
+			qDebug()<< "Music Tag" << tagId;
+			emit musicTagSelected(tag->directoryName());
 		}
-		if(m_Tags[tagId]->type().testFlag(Tag::Script)){
-			qDebug()<< "Script Tag";
-			emit scriptTagSelected(tagId);
+		if(tag->type().testFlag(Tag::Script)){
+			qDebug()<< "Script Tag" << tagId;
+			emit scriptTagSelected(tag->directoryName());
 		}
-		if(m_Tags[tagId]->type().testFlag(Tag::Audiobook)){
-			qDebug()<< "Audiobook Tag";
-			emit audioBookTagSelected(tagId);
+		if(tag->type().testFlag(Tag::Audiobook)){
+			qDebug()<< "Audiobook Tag" << tagId;
+			emit audioBookTagSelected(tag->directoryName());
 		}
 		return;
 	}
@@ -106,8 +124,8 @@ void TagManager::selectTag(const QString &tagId)
 	process->waitForFinished(10000);
 #endif
 
-	QSharedPointer<Tag> tag(new Tag(tagId, FileManager::mediaDir()));
+	QSharedPointer<Tag> tag(new Tag(tagId, "", FileManager::mediaDir()));
 	m_Tags.insert(tagId, tag);
 
-	emit tagsLoaded(static_cast<QStringList>(m_Tags.keys()), tagId);
+	emit newTagAdded(tagId);
 }

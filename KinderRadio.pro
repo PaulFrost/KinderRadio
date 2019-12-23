@@ -23,7 +23,8 @@ SOURCES += \
         rfidinterface.cpp \
         scriptmanager.cpp \
         tag.cpp \
-        tagmanager.cpp
+        tagmanager.cpp \
+    simplesound.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -38,7 +39,8 @@ HEADERS += \
     rfidinterface.h \
     scriptmanager.h \
     tag.h \
-    tagmanager.h
+    tagmanager.h \
+    simplesound.h
 
 unix:!macx: {
     SOURCES += \

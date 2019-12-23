@@ -13,7 +13,7 @@ RFIDInterface::RFIDInterface(QObject *parent) : QObject(parent)
 	nfcWorker->moveToThread(&m_nfcThread);
 	connect(&m_nfcThread, &QThread::finished, nfcWorker, &QObject::deleteLater);
 	connect(this, &RFIDInterface::operate, nfcWorker, &NFCWorker::searchForTags);
-	connect(nfcWorker, &NFCWorker::tagFound, this, &RFIDInterface::handleTag);
+	connect(nfcWorker, &NFCWorker::tagFound, this, &RFIDInterface::handleTag, Qt::DirectConnection);
 	m_nfcThread.start();
 	emit this->operate();
 }
@@ -26,6 +26,7 @@ RFIDInterface::~RFIDInterface()
 
 void RFIDInterface::handleTag(const QString &tagId)
 {
+	qDebug()<< Q_FUNC_INFO << tagId;
 	emit this->tagRecognized(tagId);
 }
 
@@ -78,7 +79,6 @@ void NFCWorker::searchForTags() {
 				result.append(QString().sprintf("%X",mfrc.uid.uidByte[i]));
 			}
 		}
-		qDebug()<< result;
 		emit tagFound(result.simplified().replace(" ", "-"));
 		sleep(1);
 	}

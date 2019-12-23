@@ -26,8 +26,11 @@ private:
 public slots:
 	void setStatusText(const QString &status);
 	void setCurrentTag(const QString &tag);
-	void populateCbTagSelect(const QStringList &tagIds, const QString &lastTag = QString());
+	void populateCbTagSelect(const QStringList &tagIds, const QStringList &tagNames, const QString &lastTag = QString());
+	void addNewTag(const QString &tagId);
 	void checkForNewTag();
+	void cbTagIndexChanged(int index);
+	void setCurrentTagSilently(const QString &tag);
 
 private slots:
 	void showAddNewTagDilog();
@@ -40,7 +43,7 @@ signals:
 	void volDownPressed();
 
 	void newTagEntered(const QString &tag);
-	void tagSelected(const QString &tag);	
+	void tagSelected(const QString &tagIdName);
 };
 
 #endif // PLAYERWIDGET_H

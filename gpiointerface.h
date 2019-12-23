@@ -32,10 +32,12 @@ public slots:
 
 signals:
 	void operate();
-	void playButtonPressed();
+	void playPauseButtonPressed();
 	void pauseButtonPressed();
 	void nextButtonPressed();
 	void prevBurronPressed();
+	void volUpPressed();
+	void volDownPressed();
 };
 
 #endif
