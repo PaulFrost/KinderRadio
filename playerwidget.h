@@ -44,6 +44,9 @@ signals:
 
 	void newTagEntered(const QString &tag);
 	void tagSelected(const QString &tagIdName);
+
+protected:
+	void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // PLAYERWIDGET_H

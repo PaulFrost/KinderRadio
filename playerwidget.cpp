@@ -12,7 +12,6 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 	ui(new Ui::PlayerWidget)
 {
 	ui->setupUi(this);
-
 	connect(ui->pbPlayPause, &QPushButton::clicked,
 			this, &PlayerWidget::playPausePressed);
 	connect(ui->pbPrevious, &QPushButton::clicked,
@@ -33,7 +32,6 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 PlayerWidget::~PlayerWidget()
 {
 	delete ui;
-	qApp->exit();
 }
 
 void PlayerWidget::setStatusText(const QString &status)
@@ -99,4 +97,10 @@ void PlayerWidget::showAddNewTagDilog()
 	if(ok){
 		emit this->newTagEntered(tagName);
 	}
+}
+
+void PlayerWidget::closeEvent(QCloseEvent *event)
+{
+	event->accept();
+	qApp->exit();
 }
