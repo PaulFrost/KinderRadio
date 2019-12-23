@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QDebug>
 #include <QVariant>
+#include <QApplication>
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
 	QWidget(parent),
@@ -32,6 +33,7 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 PlayerWidget::~PlayerWidget()
 {
 	delete ui;
+	qApp->exit();
 }
 
 void PlayerWidget::setStatusText(const QString &status)
