@@ -58,7 +58,9 @@ int main(int argc, char *argv[])
 	pw.show();
 
 	SimpleSound::playStartupSound();
+	QObject::connect(&tagManager, &TagManager::audioBookTagSelected, &simpleSound, &SimpleSound::playBell);
 	QObject::connect(&tagManager, &TagManager::musicTagSelected, &simpleSound, &SimpleSound::playBell);
+	QObject::connect(&tagManager, &TagManager::scriptTagSelected, &simpleSound, &SimpleSound::playBell);
 	QObject::connect(&tagManager, &TagManager::newTagAdded, &simpleSound, &SimpleSound::playNewTagEntered);
 
 	return a.exec();
