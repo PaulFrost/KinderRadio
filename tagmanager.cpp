@@ -8,7 +8,7 @@
 #include <QScopedPointer>
 #include <QProcess>
 
-const QString LOG_FILE = "./media/tags.log";
+const QString LOG_FILE = FileManager::mediaDirAbsolute() + "/tags.log";
 const QString DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
 
 TagManager::TagManager(QObject *parent) : QObject(parent)
@@ -83,7 +83,7 @@ void TagManager::selectTag(const QString &tagId)
 	logString.append(tagId);
 	logString.append("\n");
 
-	QFile logFile("./media/tags.log");
+	QFile logFile(LOG_FILE);
 	logFile.open(QIODevice::Append | QIODevice::WriteOnly);
 	logFile.write(logString.toLocal8Bit());
 
@@ -107,8 +107,7 @@ void TagManager::selectTag(const QString &tagId)
 		return;
 	}
 
-	QDir mediaDir = QDir::current();
-	mediaDir.cd("media");
+	QDir mediaDir = FileManager::mediaDir();
 	mediaDir.mkdir(tagId);
 
 #if defined (_RASPBERRY_PI_)

@@ -1,10 +1,17 @@
 #include "filemanager.h"
 
+const QString MEDIA_PATH = "kinderradio-media";
+
 QDir FileManager::mediaDir()
 {
-	QDir mediaDir = QDir::current();
-	mediaDir.cd("media");
+	QDir mediaDir = QDir::homePath();
+	mediaDir.cd(MEDIA_PATH);
 	return mediaDir;
+}
+
+QString FileManager::mediaDirAbsolute()
+{
+	return mediaDir().absolutePath();
 }
 
 QDir FileManager::tagDir(const QString &tagId)

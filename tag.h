@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QFlag>
 #include <QDir>
+#include "filemanager.h"
 
 class Tag : public QObject
 {
@@ -12,7 +13,7 @@ public:
 
 	enum TagType{None=0, Music, Script, Audiobook};
 
-	explicit Tag(const QString &tagId = "", const QString &name = "", QDir mediaDir = QDir::current());
+	explicit Tag(const QString &tagId = "", const QString &name = "", QDir mediaDir = FileManager::mediaDir());
 	~Tag();
 
 	QString id() const;

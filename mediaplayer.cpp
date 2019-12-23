@@ -1,4 +1,5 @@
 #include "mediaplayer.h"
+#include "filemanager.h"
 
 #include <QDebug>
 #include <QAudioDeviceInfo>
@@ -7,6 +8,7 @@
 #include <QMediaContent>
 #include <QFile>
 #include <QRegularExpression>
+
 
 static const char* AUDIOBOOK_SETTINGS_FILE = ".audiobook";
 
@@ -86,11 +88,9 @@ bool MediaPlayer::reloadMediaDir(const QString &mediaPath)
 
 	m_mediaPlaylist->clear();
 
-	QString pwd = QDir::currentPath();
 
+	QDir dir(FileManager::mediaDirAbsolute());
 
-	QDir dir(QDir::currentPath());
-	dir.cd("media");
 	if(!dir.cd(mediaPath)){
 		return false;
 	}

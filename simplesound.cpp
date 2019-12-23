@@ -1,19 +1,20 @@
 #include "simplesound.h"
+#include "filemanager.h"
 #include <QDebug>
 
 SimpleSound::SimpleSound(QObject *parent) : QObject(parent),
-	m_bellSound("./media/bell.wav", this)
+	m_bellSound(FileManager::mediaDirAbsolute() + "/bell.wav", this)
 {
 
 }
 
 void SimpleSound::playStartupSound()
 {
-	QSound::play("./media/startup.wav");
+	qDebug() << FileManager::mediaDirAbsolute() + "/startup.wav";
+	QSound::play(FileManager::mediaDirAbsolute() + "/startup.wav");
 }
 
 void SimpleSound::playBell()
 {
-	qDebug() << Q_FUNC_INFO;
 	m_bellSound.play();
 }

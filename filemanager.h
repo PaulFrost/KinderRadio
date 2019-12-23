@@ -8,6 +8,7 @@ class FileManager
 {
 public:
 	static QDir mediaDir();
+	static QString mediaDirAbsolute();
 	static QDir tagDir(const QString &tagId);
 	static QStringList registeredTags();
 
