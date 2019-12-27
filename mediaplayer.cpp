@@ -17,7 +17,6 @@ static QRegularExpression FILE_RE(FILE_PATTERN);
 
 const int INITIAL_VOLUME = 5;
 const int MAX_VOLUME = 20;
-const int VOLUME_STEPS = 10;
 
 MediaPlayer::MediaPlayer(QObject *parent) : QObject(parent),
 	m_mediaPlayer(new QMediaPlayer(this)),
@@ -180,13 +179,15 @@ void MediaPlayer::next()
 
 void MediaPlayer::volUp()
 {
-    int vol = qMin(m_mediaPlayer->volume() + MAX_VOLUME/VOLUME_STEPS, MAX_VOLUME);
+	int incr = m_mediaPlayer->volume() > 9 ? 2 : 1;
+	int vol = qMin(m_mediaPlayer->volume() + incr, MAX_VOLUME);
     m_mediaPlayer->setVolume(vol);
 }
 
 void MediaPlayer::volDown()
 {
-    int vol = qMax(m_mediaPlayer->volume() - MAX_VOLUME/VOLUME_STEPS, 0);
+	int incr = m_mediaPlayer->volume() > 9 ? 2 : 1;
+	int vol = qMax(m_mediaPlayer->volume() - incr, 0);
     m_mediaPlayer->setVolume(vol);
 }
 
