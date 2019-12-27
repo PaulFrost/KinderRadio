@@ -95,20 +95,24 @@ void TagManager::selectTag(const QString &tagId)
 	if(m_Tags.contains(tagId)){
 		qDebug()<< "m_Tags.contains " << tagId;
 		QSharedPointer<Tag> tag = m_Tags[tagId];
+
 		tag->loadSettings();
 		if(tag->type().testFlag(Tag::Music)){
 			qDebug()<< "Music Tag" << tagId;
 			emit musicTagSelected(tag->directoryName());
+			m_lastTag = tag;
 			return;
 		}
 		if(tag->type().testFlag(Tag::Script)){
 			qDebug()<< "Script Tag" << tagId;
 			emit scriptTagSelected(tag->directoryName());
+			m_lastTag = tag;
 			return;
 		}
 		if(tag->type().testFlag(Tag::Audiobook)){
 			qDebug()<< "Audiobook Tag" << tagId;
 			emit audioBookTagSelected(tag->directoryName());
+			m_lastTag = tag;
 			return;
 		}
 		return;
