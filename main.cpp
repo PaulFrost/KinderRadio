@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
 	}
 	pw.show();
 
+	mediaPlayer.play(); //Autoplay
+
 	SimpleSound::playStartupSound();
 	QObject::connect(&tagManager, &TagManager::audioBookTagSelected, &simpleSound, &SimpleSound::playBell);
 	QObject::connect(&tagManager, &TagManager::musicTagSelected, &simpleSound, &SimpleSound::playBell);
