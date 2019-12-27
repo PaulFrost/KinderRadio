@@ -76,7 +76,7 @@ QSharedPointer<Tag> TagManager::lastTag() const
 
 void TagManager::selectTag(const QString &tagId)
 {
-	if(m_lastTag->id() == tagId){
+	if(m_lastTag && m_lastTag->id() == tagId){
 		return;
 	}
 
