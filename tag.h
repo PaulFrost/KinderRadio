@@ -11,7 +11,10 @@ class Tag : public QObject
 	Q_OBJECT
 public:
 
-	enum TagType{None=0, Music, Script, Audiobook};
+	enum TagType{None = 0x0,
+				 Music = 0x1,
+				 Script = 0x2,
+				 Audiobook = 0x4};
 
 	explicit Tag(const QString &tagId = "", const QString &name = "", QDir mediaDir = FileManager::mediaDir());
 	~Tag();
