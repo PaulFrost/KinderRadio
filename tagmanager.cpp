@@ -76,6 +76,10 @@ QSharedPointer<Tag> TagManager::lastTag() const
 
 void TagManager::selectTag(const QString &tagId)
 {
+	if(m_lastTag->id() == tagId){
+		return;
+	}
+
 	qDebug()<< Q_FUNC_INFO << tagId << m_Tags.keys();
 
 	QString logString = QDateTime::currentDateTime().toString(DATE_FORMAT);
