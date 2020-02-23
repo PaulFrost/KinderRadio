@@ -1,9 +1,14 @@
 #include "tagmanager.h"
+#include "filemanager.h"
 
 #include <QDir>
 #include <QDateTime>
+#include <QDebug>
+#include <QSharedPointer>
+#include <QScopedPointer>
+#include <QProcess>
 
-const QString LOG_FILE = "./media/tags.log";
+const QString LOG_FILE = FileManager::mediaDirAbsolute() + "/tags.log";
 const QString DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
 
 TagManager::TagManager(QObject *parent) : QObject(parent)
@@ -13,15 +18,29 @@ TagManager::TagManager(QObject *parent) : QObject(parent)
 
 void TagManager::loadTags()
 {
-	QDir currentDir = QDir::current();
-	currentDir.cd("media");
-	QFlags<QDir::Filter> filter = (QDir::Filter::Dirs
-						 | QDir::Filter::NoDotDot
-						 | QDir::Filter::NoDot);
+	QStringList tagIdNameList = FileManager::registeredTags();
 
-	QStringList nameFilterList;
+	QStringList tagIdList;
+	QStringList tagNameList;
 
-	m_Tags = currentDir.entryList(nameFilterList, filter);
+	foreach (const QString tagIdName, tagIdNameList) {
+		QStringList idNameList = tagIdName.split("--");
+		QString id = idNameList[0];
+		QString name = "";
+
+
+
+		if(idNameList.count() > 1){
+			name = idNameList[1];
+			qDebug()<<id<<name;
+		}
+		tagIdList << id;
+		tagNameList << name;
+		QSharedPointer<Tag> tag(new Tag(id, name, FileManager::mediaDir()));
+
+		m_Tags.insert(id, tag);
+	}
+	QString tagId;
 
 	QFile file(LOG_FILE);
 	if(file.open(QIODevice::ReadOnly)){
@@ -37,36 +56,86 @@ void TagManager::loadTags()
 			}
 			i--;
 		}
+		tagId = line.mid(DATE_FORMAT.size() + 2);
 
-		m_lastTag = line.mid(DATE_FORMAT.size() + 2);
+		if(m_Tags.contains(tagId)){
+			QSharedPointer<Tag> tag = m_Tags[tagId];
+			if(tag->type().testFlag(Tag::TagType::Music) || tag->type().testFlag(Tag::TagType::Audiobook)){
+				m_lastTag = tag;
+			}
+		}
 	}
 
-	emit tagsLoaded(m_Tags);
+	emit tagsLoaded(tagIdList, tagNameList);
 }
 
-QString TagManager::lastTag() const
+QSharedPointer<Tag> TagManager::lastTag() const
 {
 	return m_lastTag;
 }
 
 void TagManager::selectTag(const QString &tagId)
 {
+	if(m_lastTag && m_lastTag->id() == tagId){
+		return;
+	}
+
+	qDebug()<< Q_FUNC_INFO << tagId << m_Tags.keys();
+
 	QString logString = QDateTime::currentDateTime().toString(DATE_FORMAT);
 	logString.append(": ");
 	logString.append(tagId);
 	logString.append("\n");
 
-	QFile logFile("./media/tags.log");
+	QFile logFile(LOG_FILE);
 	logFile.open(QIODevice::Append | QIODevice::WriteOnly);
 	logFile.write(logString.toLocal8Bit());
 
+
 	if(m_Tags.contains(tagId)){
+		qDebug()<< "m_Tags.contains " << tagId;
+		QSharedPointer<Tag> tag = m_Tags[tagId];
+
+		tag->loadSettings();
+		if(tag->type().testFlag(Tag::Music)){
+			qDebug()<< "Music Tag" << tagId;
+			emit musicTagSelected(tag->directoryName());
+			m_lastTag = tag;
+			return;
+		}
+		if(tag->type().testFlag(Tag::Script)){
+			qDebug()<< "Script Tag" << tagId;
+			emit scriptTagSelected(tag->directoryName());
+			m_lastTag = tag;
+			return;
+		}
+		if(tag->type().testFlag(Tag::Audiobook)){
+			qDebug()<< "Audiobook Tag" << tagId;
+			emit audioBookTagSelected(tag->directoryName());
+			m_lastTag = tag;
+			return;
+		}
 		return;
 	}
 
-	QDir currentPath = QDir::current();
-	currentPath.cd("media");
-	currentPath.mkdir(tagId);
+	QDir mediaDir = FileManager::mediaDir();
+	mediaDir.mkdir(tagId);
 
-	m_Tags.append(tagId);
+#if defined (_RASPBERRY_PI_)
+	QStringList chmodArgs;
+	chmodArgs << "-R";
+	chmodArgs << "0777";
+	chmodArgs << mediaDir.absolutePath();
+
+	QScopedPointer<QProcess> process(new QProcess);
+	process->setProgram("chmod");
+	process->setArguments(chmodArgs);
+	process->start(QIODevice::ReadOnly);
+	process->waitForFinished(10000);
+#endif
+
+	QSharedPointer<Tag> tag(new Tag(tagId, "", FileManager::mediaDir()));
+	m_Tags.insert(tagId, tag);
+
+	emit newTagAdded(tagId);
 }

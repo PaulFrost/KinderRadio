@@ -2,24 +2,31 @@
 #include "ui_playerwidget.h"
 
 #include <QKeyEvent>
+#include <QInputDialog>
+#include <QDebug>
+#include <QVariant>
+#include <QApplication>
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::PlayerWidget)
 {
 	ui->setupUi(this);
-
-	connect(ui->pbStop, &QPushButton::clicked,
-			this, &PlayerWidget::stopPressed);
-	connect(ui->pbPlay, &QPushButton::clicked,
-			this, &PlayerWidget::playPressed);
+	connect(ui->pbPlayPause, &QPushButton::clicked,
+			this, &PlayerWidget::playPausePressed);
 	connect(ui->pbPrevious, &QPushButton::clicked,
 			this, &PlayerWidget::previousPressed);
 	connect(ui->pbNext, &QPushButton::clicked,
 			this, &PlayerWidget::nextPressed);
+	connect(ui->pbAddTag, &QPushButton::clicked,
+			this, &PlayerWidget::showAddNewTagDilog);
+	connect(ui->pbVolUp, &QPushButton::clicked,
+			this, &PlayerWidget::volUpPressed);
+	connect(ui->pbVolDown, &QPushButton::clicked,
+			this, &PlayerWidget::volDownPressed);
 
-	connect(ui->cbTagSelect, &TagSelectorCB::lostFocus,
-			this, &PlayerWidget::checkForNewTag);
+	connect(ui->cbTagSelect, SIGNAL(currentIndexChanged(int)),
+			this, SLOT(cbTagIndexChanged(int)));
 }
 
 PlayerWidget::~PlayerWidget()
@@ -34,13 +41,40 @@ void PlayerWidget::setStatusText(const QString &status)
 
 void PlayerWidget::setCurrentTag(const QString &tag)
 {
-	ui->cbTagSelect->setCurrentText(tag);
+	ui->cbTagSelect->setCurrentIndex(ui->cbTagSelect->findData(tag));
 }
 
-void PlayerWidget::populateCbTagSelect(const QStringList &tagIds)
+void PlayerWidget::setCurrentTagSilently(const QString &tag)
+{
+	disconnect(ui->cbTagSelect, SIGNAL(currentIndexChanged(int)),
+			   this, SLOT(cbTagIndexChanged(int)));
+	ui->cbTagSelect->setCurrentIndex(ui->cbTagSelect->findData(tag));
+	connect(ui->cbTagSelect, SIGNAL(currentIndexChanged(int)),
+			this, SLOT(cbTagIndexChanged(int)));
+}
+
+void PlayerWidget::populateCbTagSelect(const QStringList &tagIds, const QStringList &tagNames, const QString &lastTag)
 {
 	ui->cbTagSelect->clear();
-	ui->cbTagSelect->addItems(tagIds);
+
+	for(int i = 0; i < tagNames.count(); ++i){
+		if(tagNames[i].isEmpty()){
+			ui->cbTagSelect->addItem(tagIds[i], QVariant::fromValue(tagIds[i]));
+		}
+		else{
+			ui->cbTagSelect->addItem(tagNames[i], QVariant::fromValue(tagIds[i]));
+		}
+	}
+
+	if(!lastTag.isEmpty()){
+		ui->cbTagSelect->setCurrentIndex(ui->cbTagSelect->findData(lastTag));
+	}
+}
+
+void PlayerWidget::addNewTag(const QString &tagId)
+{
+	ui->cbTagSelect->addItem(tagId, QVariant::fromValue(tagId));
+	ui->cbTagSelect->setCurrentText(tagId);
 }
 
 void PlayerWidget::checkForNewTag()
@@ -51,29 +85,22 @@ void PlayerWidget::checkForNewTag()
 	}
 }
 
-
-void PlayerWidget::on_cbTagSelect_currentIndexChanged(const QString &arg1)
+void PlayerWidget::cbTagIndexChanged(int index)
 {
-	emit tagSelected(arg1);
+	emit tagSelected(ui->cbTagSelect->itemData(index).toString());
 }
 
-void PlayerWidget::on_cbTagSelect_currentTextChanged(const QString &arg1)
+void PlayerWidget::showAddNewTagDilog()
 {
-	m_temporaryTagName = arg1;
-}
-
-TagSelectorCB::TagSelectorCB(QWidget *parent):QComboBox (parent)
-{}
-
-void TagSelectorCB::keyPressEvent(QKeyEvent *e)
-{
-	QComboBox::keyPressEvent(e);
-	if(e->key() == Qt::Key::Key_Enter){
-		clearFocus();
+	bool ok = false;
+	QString tagName = QInputDialog::getText(Q_NULLPTR, "Add tag", "Enter new tag id", QLineEdit::Normal, QString(), &ok);
+	if(ok){
+		emit this->newTagEntered(tagName);
 	}
 }
 
-void TagSelectorCB::focusOutEvent(QFocusEvent *)
+void PlayerWidget::closeEvent(QCloseEvent *event)
 {
-	emit lostFocus();
+	event->accept();
+	qApp->exit();
 }

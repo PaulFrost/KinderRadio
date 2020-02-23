@@ -11,18 +11,6 @@ namespace Ui {
 class PlayerWidget;
 }
 
-class TagSelectorCB : public QComboBox
-{
-	Q_OBJECT
-public:
-	TagSelectorCB(QWidget *parent = nullptr);
-protected:
-	void keyPressEvent(QKeyEvent *e);
-	void focusOutEvent(QFocusEvent *);
-signals:
-	void lostFocus();
-};
-
 class PlayerWidget : public QWidget
 {
 	Q_OBJECT
@@ -38,23 +26,27 @@ private:
 public slots:
 	void setStatusText(const QString &status);
 	void setCurrentTag(const QString &tag);
-
-signals:
-	void stopPressed();
-	void playPressed();
-	void previousPressed();
-	void nextPressed();
-
-	void newTagEntered(const QString &tag);
-	void tagSelected(const QString &tag);
-
-public slots:
-	void populateCbTagSelect(const QStringList &tagIds);
+	void populateCbTagSelect(const QStringList &tagIds, const QStringList &tagNames, const QString &lastTag = QString());
+	void addNewTag(const QString &tagId);
 	void checkForNewTag();
+	void cbTagIndexChanged(int index);
+	void setCurrentTagSilently(const QString &tag);
 
 private slots:
-	void on_cbTagSelect_currentIndexChanged(const QString &arg1);
-	void on_cbTagSelect_currentTextChanged(const QString &arg1);
+	void showAddNewTagDilog();
+
+signals:
+	void playPausePressed();
+	void previousPressed();
+	void nextPressed();
+	void volUpPressed();
+	void volDownPressed();
+
+	void newTagEntered(const QString &tag);
+	void tagSelected(const QString &tagIdName);
+
+protected:
+	void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // PLAYERWIDGET_H
