@@ -80,7 +80,8 @@ void NFCWorker::searchForTags() {
 			}
 		}
 		emit tagFound(result.simplified().replace(" ", "-"));
-		sleep(1);
+		mfrc.PCD_Reset();
+		sleep(100);
 	}
 }
 
