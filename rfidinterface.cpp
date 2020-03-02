@@ -1,6 +1,6 @@
 #include "rfidinterface.h"
 
-#if defined(_RASPBERRY_PI_)
+//#if defined(_RASPBERRY_PI_)
 
 #include "MFRC522.h"
 
@@ -57,12 +57,7 @@ void NFCWorker::searchForTags() {
 
 		// Look for a card
 
-		if(!mfrc.PICC_IsNewCardPresent())
-			continue;
-
-//		qDebug()<< "PICC_IsNewCardPresent";
-
-		if( !mfrc.PICC_ReadCardSerial())
+		if(!mfrc.PICC_IsNewCardPresent() || !mfrc.PICC_ReadCardSerial())
 			continue;
 
 		result.clear();
@@ -80,7 +75,7 @@ void NFCWorker::searchForTags() {
 			}
 		}
 		emit tagFound(result.simplified().replace(" ", "-"));
-		mfrc.PCD_Reset();
+		mfrc.PICC_HaltA();
 		sleep(100);
 	}
 }
