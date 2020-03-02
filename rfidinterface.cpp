@@ -1,6 +1,6 @@
 #include "rfidinterface.h"
 
-//#if defined(_RASPBERRY_PI_)
+#if defined(_RASPBERRY_PI_)
 
 #include "MFRC522.h"
 
